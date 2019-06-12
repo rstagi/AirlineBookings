@@ -18,28 +18,26 @@ if (mysqli_connect_errno())
 
 // MVC Routing
 
-switch($_GET['page'] ?? 'Homepage')
-{
-    case 'Homepage':
-        $model = new AirlineBookings\Homepage($db);
-        $controller = new Homepage\Controller($model);
-        $view = new Homepage\View($model);
-        break;
-    case 'PersonalPage':
-        $model = new AirlineBookings\PersonalPage($db);
-        $controller = new PersonalPage\Controller($model);
-        $view = new PersonalPage\View($model);
-        break;
-    default:
-        http_response_code(404);
-        $view = new MVC\View(null, "Templates/404NotFound.html.php");
-        break;
+try {
+    $route = \MVC\Router::evaluateRoute($_GET['page'] ?? '');
+
+    $model = $route->getModel($db);
+    $controller = $route->getController($model);
+    $view = $route->getView($model);
+}
+catch (\MVC\PageNotFoundException $e) {
+    http_response_code(404);
+    $view = new \MVC\View(null, 'Templates/404NotFound.html.php');
+}
+catch (Exception $e) {
+    http_response_code(400);
+    die ('Bad request for route "'.$_GET['page'].'": '.$e->getMessage().'<br />
+            Trace: '.$e->getTraceAsString());
 }
 
+
 if (isset($controller) && isset($_GET['action']) && !empty($_GET['action']))
-{
-    $controller->{$_GET['action']}();
-}
+    \MVC\Dispatcher::dispatch($controller, $_GET['action'], $_GET['args'] ?? '');
 
 $render = $view->render();
 foreach ($render['headers'] as $header) {

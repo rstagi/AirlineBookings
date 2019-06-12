@@ -1,6 +1,7 @@
 <?php
 // TODO eventually init headers
 ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <?php
@@ -9,16 +10,16 @@
     ?>
 </head>
 <body>
-<div id='container'>
+<div id="container">
     <?php
     $headerContent = '<h2>Personal Page</h2><h6>Here you can book some seats. You can also see your previously booked ones, if any.</h6>';
     require_once 'Templates/Header.html.php';
     ?>
     <div id='content'>
-        <div class='container-fluid'>
-            <h5>Remaining seats:</h5>
+        <div class="container-fluid text-center">
+            <h5>Remaining seats</h5>
 
-            <img src='Images/plane.png' class='plane' />
+            <div id="plane" class="text-center"></div>
         </div>
     </div>
     <?php
