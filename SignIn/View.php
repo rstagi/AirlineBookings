@@ -1,9 +1,9 @@
 <?php
-namespace PersonalPage;
+namespace SignIn;
 
 /**
  * Class View
- * @package PersonalPage
+ * @package SignIn
  */
 class View extends \MVC\View{
 
@@ -12,6 +12,6 @@ class View extends \MVC\View{
      * @param \MVC\Model $model
      */
     public function __construct (\MVC\Model $model) {
-        parent::__construct($model, 'Templates/PersonalPage.html.php', 'Personal Page');
+        parent::__construct($model, 'Templates/SignIn.html.php', 'Sign in');
     }
 }

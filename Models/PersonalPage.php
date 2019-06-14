@@ -1,10 +1,18 @@
 <?php
 namespace AirlineBookings;
 
-class PersonalPage extends \MVC\Model {
+/**
+ * Class PersonalPage
+ * @package AirlineBookings
+ */
+class PersonalPage extends SeatsModel {
 
-    public function __construct (\mysqli $db){
-        parent::__construct($db);
+    /**
+     * PersonalPage constructor.
+     */
+    public function __construct ()
+    {
+        parent::__construct();
     }
 
 }

@@ -6,38 +6,25 @@ spl_autoload_register(function($name) {
     require_once implode(DIRECTORY_SEPARATOR, $parts) . '.php';
 });
 
-// Db Configuration
-require_once 'Global/config.php';
-
-$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-if (mysqli_connect_errno())
-{
-    die("Connect failed: <br>" .
-        mysqli_connect_error());
-}
-
 // MVC Routing
 
 try {
-    $route = \MVC\Router::evaluateRoute($_GET['page'] ?? '');
+    $route = \MVC\Router::evaluateRoute($_GET['page'] ?? 'Homepage');
 
-    $model = $route->getModel($db);
-    $controller = $route->getController($model);
-    $view = $route->getView($model);
+    $view = $route->getView();
 }
 catch (\MVC\PageNotFoundException $e) {
-    http_response_code(404);
-    $view = new \MVC\View(null, 'Templates/404NotFound.html.php');
+    $view = new \MVC\View(null, 'Templates/Errors/404NotFound.html.php');
+}
+catch (\MVC\UnauthorizedException $e) {
+    $view = new \MVC\View(null, 'Templates/Errors/401Unauthorized.html.php');
 }
 catch (Exception $e) {
-    http_response_code(400);
-    die ('Bad request for route "'.$_GET['page'].'": '.$e->getMessage().'<br />
-            Trace: '.$e->getTraceAsString());
+    $view = new \MVC\View(null, 'Templates/Errors/500InternalServerError.html.php');
 }
 
-
-if (isset($controller) && isset($_GET['action']) && !empty($_GET['action']))
-    \MVC\Dispatcher::dispatch($controller, $_GET['action'], $_GET['args'] ?? '');
+if (isset($route) && isset($_GET['action']) && !empty($_GET['action']))
+    \MVC\Dispatcher::dispatch($route->getController(), $_GET['action'], $_GET['args'] ? json_decode($_GET['args']) : []);
 
 $render = $view->render();
 foreach ($render['headers'] as $header) {
@@ -45,4 +32,3 @@ foreach ($render['headers'] as $header) {
 }
 
 echo $render['body'];
-

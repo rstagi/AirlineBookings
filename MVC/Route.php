@@ -3,28 +3,46 @@
 
 namespace MVC;
 
-
+/**
+ * Class Route
+ * @package MVC
+ */
 class Route
 {
-    private $__model;
-    private $__view;
-    private $__controller;
+    private $model;
+    private $view;
+    private $controller;
 
+    /**
+     * Route constructor.
+     * @param $model
+     * @param $view
+     * @param $controller
+     */
     public function __construct($model, $view, $controller) {
-        $this->__model = $model;
-        $this->__view = $view;
-        $this->__controller = $controller;
+        $this->model = new $model();
+        $this->view = new $view($this->model);
+        $this->controller = new $controller($this->model);
     }
 
-    public function getModel(\mysqli $db) {
-        return new $this->__model($db);
+    /**
+     * @return mixed
+     */
+    public function getModel() {
+        return $this->moodel;
     }
 
-    public function getView(Model $model) {
-        return new $this->__view($model);
+    /**
+     * @return mixed
+     */
+    public function getView() {
+        return $this->view;
     }
 
-    public function getController(Model $model) {
-        return new $this->__controller($model);
+    /**
+     * @return mixed
+     */
+    public function getController() {
+        return $this->controller;
     }
 }

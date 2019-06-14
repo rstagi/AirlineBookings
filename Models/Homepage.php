@@ -1,35 +1,18 @@
 <?php
 namespace AirlineBookings;
 
-class Homepage extends \MVC\Model {
+/**
+ * Class Homepage
+ * @package AirlineBookings
+ */
+class Homepage extends SeatsModel {
 
-    public function __construct (\mysqli $db)
+    /**
+     * Homepage constructor.
+     */
+    public function __construct ()
     {
-        parent::__construct($db);
+        parent::__construct();
     }
 
-    public function getReservedSeats () : array
-    {
-        $seats = [];
-        $result = parent::query("SELECT * FROM ReservedSeats R");
-        while($row = $result->fetch_array())
-            $seats[$row['letter']][$row['number']] = "reserved";
-        $result->close();
-        return $seats;
-    }
-
-    public function getBoughtSeats () : array
-    {
-        $seats = [];
-        $result = parent::query("SELECT * FROM BoughtSeats");
-        while($row = $result->fetch_array())
-            $seats[$row['letter']][$row['number']] = "bought";
-        $result->close();
-        return $seats;
-    }
-
-    public function getNonFreeSeats () : array
-    {
-        return $this->getReservedSeats() + $this->getBoughtSeats();
-    }
 }
