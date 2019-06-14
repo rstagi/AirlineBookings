@@ -18,16 +18,16 @@ class Controller {
         $this->model = $model;
     }
 
+    /**
+     *
+     */
+    public function logout() {
+        $this->model->logout();
+    }
+
 }
 
 class ControllerException extends \Exception {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-}
-
-class UnauthorizedException extends ControllerException {
     public function __construct($message = "", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);

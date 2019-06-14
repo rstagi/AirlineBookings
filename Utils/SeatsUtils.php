@@ -51,11 +51,11 @@ class SeatsUtils
 
                 if ($logged)
                     $formatted .= '<td><div id="'.chr($l).$n.'" class="custom-control custom-checkbox mr-sm-2 seat-wrapper">'.
-                        '<label class="custom-control-label" for="seat'.chr($l).$n.'"></label>'.
-                        '<input type="checkbox" class="'.$class.' custom-control-input" id="seat'.chr($l).$n.'"/></div></td>';
+                        '<img src="images/free_seat.png" style="width: 30px" class="'.$class.'" />'.
+                        '<input type="checkbox" class="'.$class.' custom-control-input" id="'.chr($l).$n.'"/></div></td>';
                 else
                     $formatted .= '<td><div id="'.chr($l).$n.'" class="mr-sm-2 seat-wrapper">'.
-                                    '<img src="images/free_seat.png" style="width: 30px" /></div></td>';
+                                    '<img src="images/free_seat.png" style="width: 30px" class="'.$class.'" /></div></td>';
 
             }
             $formatted .= '<td></td></tr>';

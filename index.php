@@ -6,18 +6,34 @@ spl_autoload_register(function($name) {
     require_once implode(DIRECTORY_SEPARATOR, $parts) . '.php';
 });
 
-// MVC Routing
+session_start();
+if (!isset($_SESSION['cookies_enabled']) && !isset($_GET['check_cookies'])) {
+    setcookie('test_cookies', 'test_cookies', time() + 20);
+    header('Location:./?check_cookies=true&page='.($_GET['page'] ?? 'Homepage'));
+} else if (isset($_GET['check_cookies'])) {
+    if (count($_COOKIE) > 0){
+        $_SESSION['cookies_enabled'] = true;
+        header('Location:./?page='.$_GET['page']);
+    } else {
+        die("Please enable cookies to use this website.");
+    }
+}
 
+// MVC Routing
 try {
     $route = \MVC\Router::evaluateRoute($_GET['page'] ?? 'Homepage');
 
     $view = $route->getView();
 }
-catch (\MVC\PageNotFoundException $e) {
-    $view = new \MVC\View(null, 'Templates/Errors/404NotFound.html.php');
-}
-catch (\MVC\UnauthorizedException $e) {
-    $view = new \MVC\View(null, 'Templates/Errors/401Unauthorized.html.php');
+catch (\MVC\MVCRoutingException $e){
+    if ($e->getCode() === 401)
+        $view = new \MVC\View(null, 'Templates/Errors/401Unauthorized.html.php');
+    else if ($e->getCode() === 404)
+        $view = new \MVC\View(null, 'Templates/Errors/404NotFound.html.php');
+    else {
+        http_response_code($e->getCode());
+        die ("HTTP Error " . $e->getCode());
+    }
 }
 catch (Exception $e) {
     $view = new \MVC\View(null, 'Templates/Errors/500InternalServerError.html.php');

@@ -54,6 +54,6 @@ class Controller extends \MVC\Controller {
         if (!empty($error))
             throw new ControllerException('<ul>'.$error.'</ul>', 400);
 
-        $this->model->register($email, $this->model->hash($password));
+        $this->model->register($email, $password);
     }
 }

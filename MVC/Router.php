@@ -8,23 +8,11 @@ use Throwable;
  * Class PageNotFoundException
  * @package MVC
  */
-class PageNotFoundException extends \Exception {
-    private $pageName;
+class MVCRoutingException extends \Exception {
 
-    /**
-     * PageNotFoundException constructor.
-     * @param $pageName
-     */
-    public function __construct($pageName) {
-        parent::__construct("The page " . $pageName . " is not a valid route.");
-        $this->pageName = $pageName;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPageName() {
-        return $this->pageName;
+    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
     }
 }
 
@@ -37,8 +25,7 @@ class Router {
     /**
      * @param $page
      * @return Route
-     * @throws PageNotFoundException
-     * @throws UnauthorizedException
+     * @throws MVCRoutingException
      */
     public static function evaluateRoute($page)
     {
@@ -62,10 +49,10 @@ class Router {
                 $controller = '\\SignIn\\Controller';
                 break;
             case '401unauthorized':
-                throw new UnauthorizedException();
+                throw new MVCRoutingException("Unauthorized", 401);
                 break;
             default:
-                throw new PageNotFoundException($_GET['page']);
+                throw new MVCRoutingException("Page not found", 404);
                 break;
         }
 

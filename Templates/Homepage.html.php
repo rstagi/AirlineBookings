@@ -15,7 +15,7 @@
         echo Utils\SeatsUtils::formatSeats(
             AirlineBookings\SeatsModel::COLS,
             AirlineBookings\SeatsModel::ROWS,
-            [],
+            $model->getNonFreeSeats(),
             false);
         ?>
         <p>If you would like to <b>reserve</b> or to <b>buy some seats</b>, you must be logged in!</p>

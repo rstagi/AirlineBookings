@@ -18,6 +18,12 @@
     <link rel="stylesheet" href="Styles/style.css">
 </head>
 <body>
+
+<!-- check if Javascript is enabled -->
+<noscript><h3> You must have Javascript enabled in order to use this website. Please, enable it and then refresh this page. </h3>
+    <meta HTTP-EQUIV="refresh" content=0;url="./?page=noJavascript"></noscript>
+
+<!-- page content -->
 <div id="container">
 
     <?php

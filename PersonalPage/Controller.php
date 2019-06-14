@@ -17,13 +17,6 @@ class Controller extends \MVC\Controller {
     }
 
     /**
-     *
-     */
-    public function logout () {
-
-    }
-
-    /**
      * @param array $seats
      */
     public function reserveSeats (array $seats) {

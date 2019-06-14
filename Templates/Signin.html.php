@@ -1,5 +1,7 @@
 <?php
-
+if ($model->isUserLoggedIn()):
+    $headers[] = 'refresh:0;url=./?page=Homepage';
+else:
 ?>
 
 <div class="row mt-3">
@@ -68,3 +70,5 @@
     password.onchange = checkPasswordConfirm;
     passwordConf.onkeyup = checkPasswordConfirm;
 </script>
+
+<?php endif; ?>

@@ -23,9 +23,14 @@ class SeatsModel extends \MVC\Model
     public function getReservedSeats () : array
     {
         $seats = [];
-        $result = parent::query('SELECT SeatId FROM Reservations');
-        while($row = $result->fetch_array())
-            $seats[$row['letter']][$row['number']] = "reserved";
+        $result = parent::query('SELECT SeatId FROM Reservations
+                                        WHERE SeatId NOT IN (
+                                            SELECT SeatId FROM Purchases
+                                        )');    // NOT IN added to prevent dirty data issues
+                                                // (when bought, a seat should not be reserved anymore)
+        while($row = $result->fetch_array()) {
+            $seats[$row['SeatId']] = $row['UserId'];
+        }
         $result->close();
         return $seats;
     }
@@ -33,13 +38,15 @@ class SeatsModel extends \MVC\Model
     /**
      * @return array
      * @throws \MVC\ModelException
+     * @throws \ReflectionException
      */
     public function getBoughtSeats () : array
     {
-        $seats = [];
+        $seats = array();
         $result = parent::query('SELECT SeatId FROM Purchases');
-        while($row = $result->fetch_array())
-            $seats[$row['letter']][$row['number']] = "bought";
+        while($row = $result->fetch_array()) {
+            $seats[$row['SeatId']] = $row['UserId'];
+        }
         $result->close();
         return $seats;
     }
@@ -50,12 +57,16 @@ class SeatsModel extends \MVC\Model
      */
     public function getNonFreeSeats () : array
     {
-        return $this->getReservedSeats() + $this->getBoughtSeats();
+        $nonFreeSeats = array();
+        $nonFreeSeats['reserved'] = $this->getReservedSeats();
+        $nonFreeSeats['bought'] = $this->getBoughtSeats();
+        return $nonFreeSeats;
     }
 
     /**
      * @return int
      * @throws \MVC\ModelException
+     * @throws \ReflectionException
      */
     public function getNumberOfBoughtSeats () : int
     {
@@ -67,6 +78,7 @@ class SeatsModel extends \MVC\Model
     /**
      * @return int
      * @throws \MVC\ModelException
+     * @throws \ReflectionException
      */
     public function getNumberOfReservedSeats () : int
     {
@@ -82,6 +94,7 @@ class SeatsModel extends \MVC\Model
     /**
      * @return int
      * @throws \MVC\ModelException
+     * @throws \ReflectionException
      */
     public function getNumberOfFreeSeats () : int
     {

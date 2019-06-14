@@ -1,11 +1,12 @@
 <!-- The sidebar -->
 <nav class="sidebar bg-light">
     <a href="./">Home</a>
-    <?php if(!$model->isUserLoggedIn()): ?>
-    <a href="./?page=signin">Login</a>
-    <a href="./?page=signin">Register</a>
+    <?php
+    if(!\Utils\AirlineBookingsUtils::isNonEmpty($model) || !$model->isUserLoggedIn()): ?>
+    <a href="./?page=SignIn">Login</a>
+    <a href="./?page=SignIn">Register</a>
     <?php else: ?>
-        <a href="#about">Book</a>
-        <a href="#about">Logout</a>
-    <?php endif; ?>
+    <a href="./?page=PersonalPage">Book</a>
+    <a href="./?page=Homepage&action=logout">Logout</a>
+    <?php endif;?>
 </nav>

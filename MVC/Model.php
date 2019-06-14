@@ -24,6 +24,10 @@ class ModelException extends \Exception
 class Model
 {
     private $db;
+    public const TOKEN_TTL = 120; //secs
+    protected const USER_ID_KEY = "UserId";
+    protected const TOKEN_KEY = "Token";
+    protected const TOKEN_AGE_KEY = "Token_age";
 
     /**
      * Model constructor.
@@ -47,7 +51,6 @@ class Model
      * @param mixed ...$params
      * @return \mysqli_result
      * @throws ModelException
-     * @throws \ReflectionException
      */
     public function query($statement, ...$params) : \mysqli_result
     {
@@ -63,7 +66,6 @@ class Model
      * @param mixed ...$params
      * @return int
      * @throws ModelException
-     * @throws \ReflectionException
      */
     public function execute($statement, ...$params) : int
     {
@@ -78,14 +80,13 @@ class Model
      * @param mixed ...$params
      * @return \mysqli_stmt
      * @throws ModelException
-     * @throws \ReflectionException
      */
     private function prepareStatement($statement, ...$params) : \mysqli_stmt
     {
         if(! ($stmt = $this->db->prepare($statement)) )
             throw new ModelException("Database Error"); // query not printed on purpose: security issues
 
-        if (sizeof($params)>0)
+        if (\Utils\AirlineBookingsUtils::isNonEmpty($params[0]))
         {
             $paramsList = array();
             $paramTypes = "";
@@ -122,16 +123,56 @@ class Model
     }
 
     /**
+     * @param bool $updatedToken
      * @return bool
+     * @throws ModelException
+     * @throws \ReflectionException
      */
-    public function isUserLoggedIn() : bool
+    public function isUserLoggedIn(bool $updatedToken = true) : bool
     {
-        return false;
+        session_start();
+        return (session_status() === PHP_SESSION_ACTIVE
+            && \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[Model::USER_ID_KEY])
+            && $this->checkToken($_SESSION[Model::TOKEN_KEY], $updatedToken));
     }
 
-    public function updateJWT() : void
+    /**
+     *
+     */
+    public function logout() : void
     {
+        $_SESSION[Model::USER_ID_KEY] = null;
+        $_SESSION[Model::TOKEN_KEY] = null;
+        $_SESSION[Model::TOKEN_AGE_KEY] = null;
+    }
 
+    /**
+     * @return string
+     */
+    public function generateToken() : string
+    {
+        return uniqid();
+    }
+
+    /**
+     * @param bool $update
+     * @return bool
+     * @throws ModelException
+     */
+    public function checkToken(bool $update = true) : bool
+    {
+        $result = $this->query("SELECT Token, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(Token_age)) Token_age FROM Users WHERE UserId=?", (int)$_SESSION['UserId']);
+        $result = $result->fetch_array();
+        if ($result['Token_age'] > Model::TOKEN_TTL || $result['Token'] != $_SESSION[Model::TOKEN_KEY])
+            return false;
+
+        if ($update)
+        {
+            $newToken = $this->generateToken();
+            $this->execute("UPDATE Users SET Token=?, Token_age=NOW()", $newToken);
+            $_SESSION[Model::TOKEN_KEY] = $newToken;
+        }
+        return true;
     }
 
     /**
