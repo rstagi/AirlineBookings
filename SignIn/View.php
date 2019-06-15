@@ -5,7 +5,7 @@ namespace SignIn;
  * Class View
  * @package SignIn
  */
-class View extends \MVC\View{
+class View extends \MVC\HTTPSView {
 
     /**
      * View constructor.

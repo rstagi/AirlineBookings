@@ -20,7 +20,7 @@
 <body>
 
 <!-- check if Javascript is enabled -->
-<noscript><h3> You must have Javascript enabled in order to use this website. Please, enable it and then refresh this page. </h3>
+<noscript><p> You must have Javascript enabled in order to use this website. Please, enable it and then refresh this page. </p>
     <meta HTTP-EQUIV="refresh" content=0;url="./?page=noJavascript"></noscript>
 
 <!-- page content -->

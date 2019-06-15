@@ -1,23 +1,21 @@
 <?php
-// Classes inclusions
+// Classes dynamic inclusions
 spl_autoload_register(function($name) {
     $parts = explode('\\', $name);
     $parts[0] = $parts[0] == 'AirlineBookings' ? 'Models' : $parts[0];
     require_once implode(DIRECTORY_SEPARATOR, $parts) . '.php';
 });
 
-session_set_cookie_params(1800);
 session_start();
-if (!isset($_SESSION['cookies_enabled']) && !isset($_GET['check_cookies'])) {
-    setcookie('test_cookies', 'test_cookies', time() + 20);
-    header('Location:./?check_cookies=true&page='.($_GET['page'] ?? 'Homepage'));
-} else if (isset($_GET['check_cookies'])) {
-    if (count($_COOKIE) > 0){
-        $_SESSION['cookies_enabled'] = true;
-        header('Location:./?page='.$_GET['page']);
-    } else {
-        die("Please enable cookies to use this website.");
-    }
+
+/* Check if cookies are enabled */
+\Utils\AirlineBookingsUtils::checkCookies();
+
+// if there's no javascript, die here
+if ($_GET['page']=='noJavascript') {
+    // script to redirect as soon as js get enabled
+    echo '<script type="text/javascript"> window.location.replace("./?page=Homepage"); </script>';
+    die('Javascript must be enabled in order to use this website. Please, enable it and refresh this page.');
 }
 
 // MVC Routing

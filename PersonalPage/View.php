@@ -5,7 +5,7 @@ namespace PersonalPage;
  * Class View
  * @package PersonalPage
  */
-class View extends \MVC\View{
+class View extends \MVC\HTTPSView {
 
     /**
      * View constructor.

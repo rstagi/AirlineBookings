@@ -16,7 +16,7 @@ class View {
      * @param Model|null $model
      * @param $template
      */
-    public function __construct (Model $model = null, $template, $title = "") {
+    public function __construct (Model $model = null, $template = "", $title = "") {
         $this->model = $model;
         $this->template = $template;
         $this->title = $title;
