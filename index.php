@@ -6,6 +6,7 @@ spl_autoload_register(function($name) {
     require_once implode(DIRECTORY_SEPARATOR, $parts) . '.php';
 });
 
+session_set_cookie_params(1800);
 session_start();
 if (!isset($_SESSION['cookies_enabled']) && !isset($_GET['check_cookies'])) {
     setcookie('test_cookies', 'test_cookies', time() + 20);

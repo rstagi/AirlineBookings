@@ -1,6 +1,6 @@
 function makeAsyncAction (controller, action, args, options) {
 
-    if (options.checkCb != null && checkCb != undefined && !eval(checkCb+"()"))
+    if (options.checkCb != null && options.checkCb != undefined && !eval(options.checkCb+"()"))
         return;
 
     let req_params =    "controller="+controller+

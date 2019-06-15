@@ -227,7 +227,7 @@ class Model
         if ($update)
         {
             $newToken = $this->generateToken();
-            $this->execute("UPDATE Users SET Token=?, Token_age=NOW()", $newToken);
+            $this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?", $newToken, $this->getLoggedUserId());
             $_SESSION[Model::TOKEN_KEY] = $newToken;
         }
         return true;

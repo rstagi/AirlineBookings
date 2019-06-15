@@ -29,7 +29,7 @@ class SeatsUtils
 
         // print letters
         $firstLetter = ord('A');
-        $middleLetter = $firstLetter + $cols/2;
+        $middleLetter = $firstLetter + (int)($cols/2);
         $lastLetter = $firstLetter + $cols-1;
 
         $formatted .= '<thead><th></th>';

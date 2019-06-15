@@ -59,11 +59,12 @@ class SignIn extends \MVC\Model
         if (password_verify($password, $res['Password'])) {
             $token = $this->generateToken();
             if (password_needs_rehash($password, SignIn::HASH_ALGORITHM))
-                $this->execute("UPDATE Users SET Password=?, Token=?, Token_age=NOW()",
+                $this->execute("UPDATE Users SET Password=?, Token=?, Token_age=NOW() WHERE UserId=?",
                             password_hash($password, SignIn::HASH_ALGORITHM),
-                            $token);
+                            $token, $res['UserId']);
             else
-                $this->execute("UPDATE Users SET Token=?, Token_age=NOW()", $token);
+                $this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?",
+                                            $token, $res['UserId']);
 
         }  else
             return false;

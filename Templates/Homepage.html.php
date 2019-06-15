@@ -34,5 +34,11 @@
         $('img.seat.bought').prop("src", "images/bought_seat.png");
         $('img.seat.free').prop("src", "images/free_seat.png");
         $('img.seat.selected').prop("src", "images/selected_seat.png");
+
+
+        $('span#leftSeats').html($('img.seat.free').length);
+        let numberOfSelected = $('img.seat.selected').length;
+        $('span#reservedSeats').html(numberOfSelected + $('img.seat.reserved').length);
+        $('span#boughtSeats').html($('img.seat.bought').length);
     });
 </script>
