@@ -23,8 +23,12 @@
         </div>
         <?php
         echo Utils\SeatsUtils::formatSeats($model);
-        ?>
-        <p>If you would like to <b>reserve</b> or to <b>buy some seats</b>, you must be logged in!</p>
+
+        if (!$model->isUserLoggedIn()): ?>
+            <p>If you would like to <b>reserve</b> or to <b>buy some seats</b>, you must be <a href="./?page=SignIn">logged in</a>!</p>
+        <?php else: ?>
+            <p>If you would like to <b>reserve</b> or to <b>buy some seats</b>, you should go to your <a href="./?page=PersonalPage">Personal Page</a>.</p>
+        <?php endif; ?>
     </div>
 </div>
 
