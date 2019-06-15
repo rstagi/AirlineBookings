@@ -25,9 +25,9 @@ class Model
 {
     private $db;
     public const TOKEN_TTL = 120; //secs
-    protected const USER_ID_KEY = "UserId";
-    protected const TOKEN_KEY = "Token";
-    protected const TOKEN_AGE_KEY = "Token_age";
+    public const USER_ID_KEY = "UserId";
+    public const TOKEN_KEY = "Token";
+    public const TOKEN_AGE_KEY = "Token_age";
 
     /**
      * Model constructor.

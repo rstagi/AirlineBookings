@@ -23,7 +23,7 @@ class SeatsModel extends \MVC\Model
     public function getReservedSeats () : array
     {
         $seats = [];
-        $result = parent::query('SELECT SeatId FROM Reservations
+        $result = parent::query('SELECT * FROM Reservations
                                         WHERE SeatId NOT IN (
                                             SELECT SeatId FROM Purchases
                                         )');    // NOT IN added to prevent dirty data issues
@@ -43,7 +43,7 @@ class SeatsModel extends \MVC\Model
     public function getBoughtSeats () : array
     {
         $seats = array();
-        $result = parent::query('SELECT SeatId FROM Purchases');
+        $result = parent::query('SELECT * FROM Purchases');
         while($row = $result->fetch_array()) {
             $seats[$row['SeatId']] = $row['UserId'];
         }

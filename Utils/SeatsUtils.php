@@ -47,15 +47,31 @@ class SeatsUtils
                 if ($l == $middleLetter)
                     $formatted .= '<td> </td>';
 
-                $class = 'seat ' . ($nonFreeSeats[$l][$n] ?? '');
+                $seatId = chr($l).$n;
+                $class = 'seat ';
+                $img = 'free_seat.png';
+                if (AirlineBookingsUtils::isNonEmpty($nonFreeSeats['reserved'][$seatId])) {
+                    if ($nonFreeSeats['reserved'][$seatId] != $_SESSION[\MVC\Model::USER_ID_KEY]) {
+                        $class .= 'selected';
+                        $img = 'selected_seat.png';
+                    } else {
+                        $class .= 'reserved';
+                        $img = 'reserved_seat.png';
+                    }
+                } else if (AirlineBookingsUtils::isNonEmpty($nonFreeSeats['bought'][$seatId])) {
+                    $class .= 'bought';
+                    $img = 'bought_seat.png';
+                } else
+                    $class .= 'free';
 
-                if ($logged)
-                    $formatted .= '<td><div id="'.chr($l).$n.'" class="custom-control custom-checkbox mr-sm-2 seat-wrapper">'.
-                        '<img src="images/free_seat.png" style="width: 30px" class="'.$class.'" />'.
-                        '<input type="checkbox" class="'.$class.' custom-control-input" id="'.chr($l).$n.'"/></div></td>';
-                else
-                    $formatted .= '<td><div id="'.chr($l).$n.'" class="mr-sm-2 seat-wrapper">'.
-                                    '<img src="images/free_seat.png" style="width: 30px" class="'.$class.'" /></div></td>';
+                $formatted .= '<td><div class="mr-sm-2 seat-wrapper">'.
+                        '<img id="'.$seatId.'" src="images/'.$img.'" style="width: 30px" class="'.$class.'" />';
+
+                if ($logged && !AirlineBookingsUtils::isNonEmpty($nonFreeSeats['bought'][$seatId]))
+                    $formatted .= "<input type=\"checkbox\" class=\"triggerAction $class\" action=\"reserve\"
+                                    failure=\"reservationFailed\" id=\"seat$seatId\" name=\"$seatId\" hidden />";
+
+                $formatted .= '</div></td>';
 
             }
             $formatted .= '<td></td></tr>';

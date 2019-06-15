@@ -1,26 +1,11 @@
-$('form.controller').submit(function (e) {
+function makeAsyncAction (controller, action, args, options) {
 
-    e.preventDefault();
+    if (options.checkCb != null && checkCb != undefined && !eval(checkCb+"()"))
+        return;
 
-    let checkCb = $(this).attr("checkBefore");
-    if (checkCb != null && checkCb != undefined)
-    {
-        if (!eval(checkCb+"()")) return;
-    }
-
-    let args = {};
-    for (let element of e.currentTarget)
-        if (element.localName != 'button' && element.name != undefined && element.name != null)
-            args[element.name] = element.value;
-
-    let req_params =    "controller="+$(this).attr("controller")+
-                        "&action="+$(this).attr("action")+
+    let req_params =    "controller="+controller+
+                        "&action="+action+
                         "&args="+JSON.stringify(args);
-
-    let redirectTo = $(this).attr("redirectTo");
-    let successCb = $(this).attr("success");
-    let failureCb = $(this).attr("failure");
-    let errorMessage = $(this).find('.errorMessage');
 
     $.ajax({
         contentType: 'application/x-www-form-urlencoded',
@@ -28,11 +13,18 @@ $('form.controller').submit(function (e) {
         url: 'asyncDispatcher.php',
         data: req_params,
         success: function (payload) {
-            if ( redirectTo != null && redirectTo != undefined )
-                window.location.replace(redirectTo);
-            $(errorMessage).hide();
-            if ( successCb != null && successCb != undefined )
-                successCb();
+            if ( options.redirectTo != null && options.redirectTo != undefined )
+                window.location.replace(options.redirectTo);
+
+            if (options.errorMessage != undefined && options.errorMessage != null)
+                $(options.errorMessage).hide();
+
+
+            if (options.successMessage != undefined && options.successMessage != null)
+                $(options.successMessage).html(payload).show();
+
+            if ( options.successCb != null && options.successCb != undefined )
+                options.successCb();
         },
         error: function (xhr, ajaxOptions, thrownError) {
             let error = "";
@@ -43,15 +35,53 @@ $('form.controller').submit(function (e) {
             else
                 error = xhr.responseText;
 
-            $(errorMessage).html(error).show();
+            if (options.successMessage != undefined && options.successMessage != null)
+                $(options.successMessage).hide();
 
-            if ( failureCb != null && failureCb != undefined )
-                failureCb();
+            if (options.errorMessage != undefined && options.errorMessage != null)
+                $(options.errorMessage).html(error).show();
+
+            if ( options.failureCb != null && options.failureCb != undefined )
+                options.failureCb(xhr.status);
         }
     });
+}
+
+
+$('form.controller').submit(function (e) {
+
+    e.preventDefault();
+
+    let args = {};
+    for (let element of e.currentTarget)
+        if (element.localName != 'button' && element.name != undefined && element.name != null)
+            args[element.name] = element.value;
+
+    let options = {
+        checkCb: $(this).attr("checkBefore"),
+        redirectTo: $(this).attr("redirectTo"),
+        successCb: $(this).attr("success"),
+        failureCb: $(this).attr("failure"),
+        errorMessage: $(this).find('.errorMessage'),
+        successMessage: $(this).find('.successMessage')
+    };
+
+    makeAsyncAction($(this).attr("controller"), $(this).attr("action"), args, options);
 
 });
 
-$('.controller input[type="checkbox"].triggerAction').change(function (event){
+$('form.controller input:checkbox.triggerAction').change(function (event){
 
+    console.log(event);
+    
+    let options = {
+        checkCb: $(this).attr("checkBefore"),
+        redirectTo: $(this).attr("redirectTo"),
+        successCb: $(this).attr("success"),
+        failureCb: $(this).attr("failure"),
+        errorMessage: $(this).find('.errorMessage'),
+        successMessage: $(this).find('.successMessage')
+    };
+
+    makeAsyncAction($(event.currentTarget.form).attr("controller"), $(this).attr("action"), [], options);
 });
