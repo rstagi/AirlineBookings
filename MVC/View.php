@@ -6,7 +6,7 @@ namespace MVC;
  * @package MVC
  */
 class View {
-    private const TEMPLATE = "Templates/Common/Template.html.php";
+    const TEMPLATE = "Templates/Common/Template.html.php";
     private $model;
     private $template;
     private $title;
@@ -16,7 +16,7 @@ class View {
      * @param Model|null $model
      * @param $template
      */
-    public function __construct (?Model $model, $template, $title = "") {
+    public function __construct (Model $model = null, $template, $title = "") {
         $this->model = $model;
         $this->template = $template;
         $this->title = $title;

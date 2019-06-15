@@ -31,7 +31,7 @@ class Dispatcher
      * @throws \ReflectionException
      * @throws Exception
      */
-    public static function dispatch(Controller $controller, $action, ?array $args = null)
+    public static function dispatch(Controller $controller, $action, array $args = null)
     {
         if (!method_exists($controller, $action))
             throw new DispatcherException("Invalid action", 400);

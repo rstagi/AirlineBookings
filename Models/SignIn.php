@@ -10,7 +10,7 @@ class SignIn extends \MVC\Model
      * @const HASH_ALGORITHM
      * Default password hash algorithm to safely store the password
      */
-    private const HASH_ALGORITHM = PASSWORD_DEFAULT;
+    const HASH_ALGORITHM = PASSWORD_DEFAULT;
 
     /**
      * @const PASSWORD_REGEX
@@ -18,7 +18,7 @@ class SignIn extends \MVC\Model
      * and at least one other character that is either alphabetical uppercase
      * or numeric.
      */
-    private const PASSWORD_REGEX = "/[a-z]+(.*)[A-Z0-9]+/";
+    const PASSWORD_REGEX = "/[a-z]+(.*)[A-Z0-9]+/";
 
     /**
      * SignIn constructor.

@@ -24,13 +24,13 @@ class ModelException extends \Exception
 class Model
 {
     private $db;
-    public const TOKEN_TTL = 120; //secs
-    protected const USER_ID_KEY = "UserId";
-    protected const TOKEN_KEY = "Token";
-    protected const TOKEN_AGE_KEY = "Token_age";
-    protected const PURCHASES_TABLE = "Purchases";
-    protected const RESERVATIONS_TABLE = "Reservations";
-    protected const USERS_TABLE = "Users";
+    const TOKEN_TTL = 120; //secs
+    const USER_ID_KEY = "UserId";
+    const TOKEN_KEY = "Token";
+    const TOKEN_AGE_KEY = "Token_age";
+    const PURCHASES_TABLE = "Purchases";
+    const RESERVATIONS_TABLE = "Reservations";
+    const USERS_TABLE = "Users";
 
     /**
      * Model constructor.
@@ -196,7 +196,7 @@ class Model
     /**
      *
      */
-    public function logout() : void
+    public function logout()
     {
         $_SESSION[Model::USER_ID_KEY] = null;
         $_SESSION[Model::TOKEN_KEY] = null;
