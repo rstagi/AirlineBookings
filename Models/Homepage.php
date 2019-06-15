@@ -5,7 +5,7 @@ namespace AirlineBookings;
  * Class Homepage
  * @package AirlineBookings
  */
-class Homepage extends SeatsModel {
+class Homepage extends SeatsMap {
 
     /**
      * Homepage constructor.

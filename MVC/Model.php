@@ -25,14 +25,17 @@ class Model
 {
     private $db;
     public const TOKEN_TTL = 120; //secs
-    public const USER_ID_KEY = "UserId";
-    public const TOKEN_KEY = "Token";
-    public const TOKEN_AGE_KEY = "Token_age";
+    protected const USER_ID_KEY = "UserId";
+    protected const TOKEN_KEY = "Token";
+    protected const TOKEN_AGE_KEY = "Token_age";
+    protected const PURCHASES_TABLE = "Purchases";
+    protected const RESERVATIONS_TABLE = "Reservations";
+    protected const USERS_TABLE = "Users";
 
     /**
      * Model constructor.
      */
-    public function __construct()
+    protected function __construct()
     {
         // Db Configuration
         require_once 'Global/config.php';
@@ -52,12 +55,12 @@ class Model
      * @return \mysqli_result
      * @throws ModelException
      */
-    public function query($statement, ...$params) : \mysqli_result
+    protected function query($statement, ...$params) : \mysqli_result
     {
 
         $stmt = $this->prepareStatement($statement, $params);
         if (!$stmt->execute())
-            throw new ModelException("Database Error");
+            throw new ModelException("Database Error", 500);
         return $stmt->get_result();
     }
 
@@ -67,13 +70,38 @@ class Model
      * @return int
      * @throws ModelException
      */
-    public function execute($statement, ...$params) : int
+    protected function execute($statement, ...$params) : int
     {
         $stmt = $this->prepareStatement($statement, $params);
         if (!$stmt->execute())
-            throw new ModelException("Database Error");
+            throw new ModelException("Database Error", 500);
         return $stmt->affected_rows;
     }
+
+    /**
+     *
+     */
+    protected function transactionBegin()
+    {
+        mysqli_autocommit($this->db, false);
+    }
+
+    /**
+     *
+     */
+    protected function transactionRollback()
+    {
+        mysqli_rollback($this->db);
+    }
+
+    /**
+     *
+     */
+    protected function transactionCommit()
+    {
+        mysqli_commit($this->db);
+    }
+
 
     /**
      * @param $statement
@@ -84,28 +112,19 @@ class Model
     private function prepareStatement($statement, ...$params) : \mysqli_stmt
     {
         if(! ($stmt = $this->db->prepare($statement)) )
-            throw new ModelException("Database Error"); // query not printed on purpose: security issues
+            throw new ModelException("Database Error", 500); // query not printed on purpose: security issues
 
         if (\Utils\AirlineBookingsUtils::isNonEmpty($params[0]))
         {
             $paramsList = array();
             $paramTypes = "";
-            foreach($params[0] as $k=>$p) {
-                switch (gettype($p)) {
-                    case 'string':
-                        $p = $this->sanitize($p);
-                        $paramTypes .= 's';
-                        break;
-                    case 'integer':
-                        $paramTypes .= 'i';
-                        break;
-                    case 'double':
-                        $paramTypes .= 'd';
-                        break;
-                    default:
-                        throw new ModelException("Database error");
-                }
-                $paramsList[] = $p;
+            foreach($params[0] as $p) {
+                $paramTypes .= $this->getParamType($p);
+                $sanitizedValue = $this->sanitize($p);
+                if (gettype($sanitizedValue) == 'array')
+                    $paramsList = array_merge($paramsList, $sanitizedValue);
+                else
+                    $paramsList[] = $sanitizedValue;
             }
             $stmt->bind_param($paramTypes, ...$paramsList);
         }
@@ -113,20 +132,50 @@ class Model
         return $stmt;
     }
 
-    /**
-     * @param string $input
-     * @return string
-     */
-    public function sanitize(string $input) : string
+    private function getParamType($param) : string
     {
-        return mysqli_real_escape_string($this->db, $input);
+        $paramType = '';
+        switch(gettype($param))
+        {
+            case 'string':
+                $paramType .= 's';
+                break;
+            case 'integer':
+                $paramType .= 'i';
+                break;
+            case 'double':
+                $paramType .= 'd';
+                break;
+            case 'array':
+                $paramType .= str_repeat(getParamType($param[0]), sizeof($param));
+                break;
+            default:
+                throw new ModelException("Database Error: Not recognized Object", 500);
+        }
+        return $paramType;
+    }
+
+    /**
+     * @param $input
+     * @return mixed
+     */
+    protected function sanitize($input)
+    {
+        if (gettype($input) == 'string')
+            return mysqli_real_escape_string($this->db, $input);
+        else if (gettype($input) == 'array' && gettype($input[0]) == 'string') {
+            $arr = array();
+            foreach($input as $str)
+                $arr[] = $this->sanitize($str);
+            return $arr;
+        }
+        return $input;
     }
 
     /**
      * @param bool $updatedToken
      * @return bool
      * @throws ModelException
-     * @throws \ReflectionException
      */
     public function isUserLoggedIn(bool $updatedToken = true) : bool
     {
@@ -134,6 +183,14 @@ class Model
         return (session_status() === PHP_SESSION_ACTIVE
             && \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[Model::USER_ID_KEY])
             && $this->checkToken($_SESSION[Model::TOKEN_KEY], $updatedToken));
+    }
+
+    public function getLoggedUserId() : int
+    {
+        if ( ! \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[Model::USER_ID_KEY]) )
+            throw new ModelException("User not logged in", 401);
+        return $_SESSION[Model::USER_ID_KEY];
+
     }
 
     /**
@@ -149,7 +206,7 @@ class Model
     /**
      * @return string
      */
-    public function generateToken() : string
+    protected function generateToken() : string
     {
         return uniqid();
     }
@@ -161,7 +218,8 @@ class Model
      */
     public function checkToken(bool $update = true) : bool
     {
-        $result = $this->query("SELECT Token, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(Token_age)) Token_age FROM Users WHERE UserId=?", (int)$_SESSION['UserId']);
+        $result = $this->query("SELECT Token, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(Token_age)) Token_age FROM Users WHERE UserId=?",
+                                        $this->getLoggedUserId());
         $result = $result->fetch_array();
         if ($result['Token_age'] > Model::TOKEN_TTL || $result['Token'] != $_SESSION[Model::TOKEN_KEY])
             return false;

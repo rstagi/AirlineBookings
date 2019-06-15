@@ -11,17 +11,21 @@ class SeatsUtils
 {
 
     /**
-     * @param $cols
-     * @param $rows
-     * @param $nonFreeSeats
-     * @param $logged
+     * @param \AirlineBookings\SeatsMap $model
+     * @param bool $showLogged
      * @return string
+     * @throws \MVC\ModelException
+     * @throws \ReflectionException
      */
-    public static function formatSeats ($cols, $rows, $nonFreeSeats, $logged) {
+    public static function formatSeats (\AirlineBookings\SeatsMap $model, bool $showLogged = false) {
 
         $formatted = '';
 
         $formatted .= '<table class="table w-100 text-center mx-auto">';
+
+        $cols = \AirlineBookings\SeatsMap::COLS;
+        $rows = \AirlineBookings\SeatsMap::ROWS;
+        $nonFreeSeats = $model->getNonFreeSeats();
 
         // print letters
         $firstLetter = ord('A');
@@ -49,27 +53,23 @@ class SeatsUtils
 
                 $seatId = chr($l).$n;
                 $class = 'seat ';
-                $img = 'free_seat.png';
                 if (AirlineBookingsUtils::isNonEmpty($nonFreeSeats['reserved'][$seatId])) {
-                    if ($nonFreeSeats['reserved'][$seatId] != $_SESSION[\MVC\Model::USER_ID_KEY]) {
+                    if ($model->isUserLoggedIn() && $nonFreeSeats['reserved'][$seatId] == $model->getLoggedUserId()) {
                         $class .= 'selected';
-                        $img = 'selected_seat.png';
                     } else {
                         $class .= 'reserved';
-                        $img = 'reserved_seat.png';
                     }
                 } else if (AirlineBookingsUtils::isNonEmpty($nonFreeSeats['bought'][$seatId])) {
                     $class .= 'bought';
-                    $img = 'bought_seat.png';
                 } else
                     $class .= 'free';
 
                 $formatted .= '<td><div class="mr-sm-2 seat-wrapper">'.
-                        '<img id="'.$seatId.'" src="images/'.$img.'" style="width: 30px" class="'.$class.'" />';
+                        '<img id="'.$seatId.'" class="'.$class.'" />';
 
-                if ($logged && !AirlineBookingsUtils::isNonEmpty($nonFreeSeats['bought'][$seatId]))
-                    $formatted .= "<input type=\"checkbox\" class=\"triggerAction $class\" action=\"reserve\"
-                                    failure=\"reservationFailed\" id=\"seat$seatId\" name=\"$seatId\" hidden />";
+                if ($model->isUserLoggedIn() && $showLogged && !AirlineBookingsUtils::isNonEmpty($nonFreeSeats['bought'][$seatId]))
+                    $formatted .= "<input type=\"checkbox\" class=\"triggerAction $class\" 
+                                    id=\"seat$seatId\" name=\"$seatId\" hidden />";
 
                 $formatted .= '</div></td>';
 
@@ -82,6 +82,6 @@ class SeatsUtils
     }
 
     public function calculateNumberOfFreeSeats(int $occupiedSeats) {
-        return \AirlineBookings\SeatsModel::COLS * \AirlineBookings\SeatsModel::ROWS - $occupiedSeats;
+        return \AirlineBookings\SeatsMap::COLS * \AirlineBookings\SeatsMap::ROWS - $occupiedSeats;
     }
 }

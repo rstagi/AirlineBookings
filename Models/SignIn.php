@@ -21,6 +21,14 @@ class SignIn extends \MVC\Model
     private const PASSWORD_REGEX = "/[a-z]+(.*)[A-Z0-9]+/";
 
     /**
+     * SignIn constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
      * @param string $email
      * @return bool
      * @throws \MVC\ModelException

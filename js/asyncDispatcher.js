@@ -19,12 +19,15 @@ function makeAsyncAction (controller, action, args, options) {
             if (options.errorMessage != undefined && options.errorMessage != null)
                 $(options.errorMessage).hide();
 
-
             if (options.successMessage != undefined && options.successMessage != null)
                 $(options.successMessage).html(payload).show();
 
-            if ( options.successCb != null && options.successCb != undefined )
-                options.successCb();
+            if ( options.onSuccess != null && options.onSuccess != undefined ) {
+                if (options.idForCallback != null && options.idForCallback != undefined)
+                    eval(options.onSuccess + '("' + options.idForCallback + '")');
+                else
+                    eval(options.onSuccess+'()');
+            }
         },
         error: function (xhr, ajaxOptions, thrownError) {
             let error = "";
@@ -41,8 +44,12 @@ function makeAsyncAction (controller, action, args, options) {
             if (options.errorMessage != undefined && options.errorMessage != null)
                 $(options.errorMessage).html(error).show();
 
-            if ( options.failureCb != null && options.failureCb != undefined )
-                options.failureCb(xhr.status);
+            if ( options.onFailure != null && options.onFailure != undefined ) {
+                if (options.idForCallback != null && options.idForCallback != undefined)
+                    eval(options.onFailure+'("'+options.idForCallback+'", '+xhr.status+')');
+                else
+                    eval(options.onFailure+'('+xhr.status+')');
+            }
         }
     });
 }
@@ -54,14 +61,26 @@ $('form.controller').submit(function (e) {
 
     let args = {};
     for (let element of e.currentTarget)
-        if (element.localName != 'button' && element.name != undefined && element.name != null)
-            args[element.name] = element.value;
+        if (element.localName != 'button' && element.name != undefined && element.name != null) {
+            if (element.localName != 'checkbox' && element.localName != 'radio')
+                args[element.name] = element.value;     // if it's a standard input, just take the value
+            else if (element.checked) {
+                if (element.localName == 'radio') {
+                    args[element.name] = element.value;     // if it's a radio, take the value only if it's checked
+                } else if ($(element).attr("list") == true && $(element).attr("groupName") != undefined && $(element).attr("groupName") != null) {
+                    if (args[$(element).attr("groupName")] == undefined) // if it's a checkbox defined as a list, then push back its name in an array
+                        args[$(element).attr("groupName")] = [element.name];
+                    else
+                        args[$(element).attr("groupName")].push(element.name);
+                }
+            }
+        }
 
     let options = {
         checkCb: $(this).attr("checkBefore"),
         redirectTo: $(this).attr("redirectTo"),
-        successCb: $(this).attr("success"),
-        failureCb: $(this).attr("failure"),
+        onSuccess: $(this).attr("onSuccess"),
+        onFailure: $(this).attr("onFailure"),
         errorMessage: $(this).find('.errorMessage'),
         successMessage: $(this).find('.successMessage')
     };
@@ -72,16 +91,20 @@ $('form.controller').submit(function (e) {
 
 $('form.controller input:checkbox.triggerAction').change(function (event){
 
-    console.log(event);
-    
+    let args = {
+        seatId: $(this).attr("name")
+    };
+
     let options = {
         checkCb: $(this).attr("checkBefore"),
         redirectTo: $(this).attr("redirectTo"),
-        successCb: $(this).attr("success"),
-        failureCb: $(this).attr("failure"),
+        onSuccess: $(this).attr("onSuccess"),
+        failureCb: $(this).attr("failureCallback"),
+        onFailure: $(this).attr("onFailure"),
         errorMessage: $(this).find('.errorMessage'),
-        successMessage: $(this).find('.successMessage')
+        successMessage: $(this).find('.successMessage'),
+        idForCallback: $(this).attr("id")
     };
 
-    makeAsyncAction($(event.currentTarget.form).attr("controller"), $(this).attr("action"), [], options);
+    makeAsyncAction($(event.currentTarget.form).attr("controller"), $(this).attr("action"), args, options);
 });

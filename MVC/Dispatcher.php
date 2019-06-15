@@ -29,6 +29,7 @@ class Dispatcher
      * @param array|null $args
      * @throws DispatcherException
      * @throws \ReflectionException
+     * @throws Exception
      */
     public static function dispatch(Controller $controller, $action, ?array $args = null)
     {

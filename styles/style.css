@@ -25,7 +25,6 @@
     width: 200px;
     overflow: auto;
     height: 100%;
-
 }
 
 /* Sidebar links */
@@ -64,7 +63,16 @@ footer#footer {
     margin: 0;
 }
 
-/* On screens that are less than 700px wide, make the sidebar into a topbar */
+/** Seats **/
+img.seat {
+    width: 30px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* On screens that are less than 700px wide, make the sidebar into a top bar */
 @media screen and (max-width: 1199px) {
     .sidebar {
         height: auto;
