@@ -19,7 +19,8 @@ class HTTPSView extends View
     /**
      * @return array
      */
-    public function render () {
+    public function render ()
+    {
         HTTPSView::enforceHTTPS();
 
         return parent::render();
@@ -30,8 +31,7 @@ class HTTPSView extends View
      */
     public static function enforceHTTPS()
     {
-        if($_SERVER["HTTPS"] != "on")
-        {
+        if($_SERVER["HTTPS"] != "on") {
             header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
             exit();
         }

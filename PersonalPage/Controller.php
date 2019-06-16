@@ -29,7 +29,7 @@ class Controller extends \MVC\Controller {
             throw new ControllerException("User not logged in", 401);
 
         if ( $this->model->isSeatBought($seatId) )
-            throw new ControllerException("The seat $seatId has been already bought.", 403);
+            throw new ControllerException($this->model->getError(), 403);
 
         $this->model->reserveSeat($seatId);
         return true;
@@ -47,7 +47,7 @@ class Controller extends \MVC\Controller {
 
         if ( ! $this->model->buySeats($seats) ) {
             $this->model->removeReservationsForUser();
-            throw new ControllerException("Something went wrong with the selected seats.", 409);
+            throw new ControllerException($this->model->getError(), 409);
         }
         return true;
     }

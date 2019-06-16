@@ -18,7 +18,7 @@ class SignIn extends \MVC\Model
      * and at least one other character that is either alphabetical uppercase
      * or numeric.
      */
-    const PASSWORD_REGEX = "/[a-z]+(.*)[A-Z0-9]+/";
+    const PASSWORD_REGEX = "/(?=.*[a-z])(?=.*[A-Z0-9]).+/";
 
     /**
      * SignIn constructor.
@@ -51,27 +51,27 @@ class SignIn extends \MVC\Model
     {
         $result = $this->query("SELECT * FROM Users WHERE Email=?", $email);
 
-        if ($result->num_rows < 1)
+        if ($result->num_rows < 1) {
+            $this->error = "Wrong email or passwords.";
             return false;
+        }
 
         $res = $result->fetch_array();
 
         if (password_verify($password, $res['Password'])) {
             $token = $this->generateToken();
-            if (password_needs_rehash($password, SignIn::HASH_ALGORITHM))
-                $this->execute("UPDATE Users SET Password=?, Token=?, Token_age=NOW() WHERE UserId=?",
-                            password_hash($password, SignIn::HASH_ALGORITHM),
-                            $token, $res['UserId']);
-            else
-                $this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?",
+            $this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?",
                                             $token, $res['UserId']);
-
-        }  else
+        }  else {
+            $this->error = "Wrong email or passwords.";
             return false;
+        }
 
         session_start();
         $_SESSION[parent::USER_ID_KEY] = $res['UserId'];
         $_SESSION[parent::TOKEN_KEY] = $token;
+        $_SESSION[parent::EMAIL_KEY] = $email;
+        $this->success = "Successfully logged in!";
         return true;
     }
 
@@ -96,11 +96,15 @@ class SignIn extends \MVC\Model
      */
     public function register(string $email, string $password)
     {
-        if ($this->userExists($email)) throw new ModelException("User already exist");
+        if ($this->userExists($email)){
+            $this->error = "User already exist.";
+            throw new ModelException("User already exist");
+        }
 
         $this->execute("INSERT INTO Users (Email, Password) VALUES (?, ?);", $email, password_hash($password, SignIn::HASH_ALGORITHM));
 
         $this->login($email, $password);
+        $this->success = "Successfully registered and logged in!";
     }
 
     /**

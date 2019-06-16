@@ -35,7 +35,7 @@ class SeatsUtils
         $formatted .= '<thead><th></th>';
         for ($l = $firstLetter; $l < $middleLetter; $l++)
             $formatted .= '<th>'.chr($l).'</th>';
-        $formatted .= '<th> </th>';
+        $formatted .= '<th> </th><th> </th>';
         for ( ; $l <= $lastLetter; $l++)
             $formatted .= '<th>'.chr($l).'</th>';
         $formatted .= '<th></th></thead>';
@@ -49,12 +49,12 @@ class SeatsUtils
             for ($l = $firstLetter; $l <= $lastLetter; $l++)
             {
                 if ($l == $middleLetter)
-                    $formatted .= '<td> </td>';
+                    $formatted .= '<td> </td><td> </td>';
 
                 $seatId = chr($l).$n;
                 $class = 'seat ';
                 if (AirlineBookingsUtils::isNonEmpty($nonFreeSeats['reserved'][$seatId])) {
-                    if ($model->isUserLoggedIn() && $nonFreeSeats['reserved'][$seatId] == $model->getLoggedUserId()) {
+                    if ($showLogged && $model->isUserLoggedIn() && $nonFreeSeats['reserved'][$seatId] == $model->getLoggedUserId()) {
                         $class .= 'selected';
                     } else {
                         $class .= 'reserved';
@@ -68,8 +68,8 @@ class SeatsUtils
                         '<img id="'.$seatId.'" class="'.$class.'" />';
 
                 if ($model->isUserLoggedIn() && $showLogged && !AirlineBookingsUtils::isNonEmpty($nonFreeSeats['bought'][$seatId]))
-                    $formatted .= "<input type=\"checkbox\" class=\"triggerAction $class\" 
-                                    id=\"seat$seatId\" name=\"$seatId\" hidden />";
+                    $formatted .= "<input type=\"checkbox\" class=\"asyncTrigger $class\" name=\"seats[]\"
+                                    id=\"seat$seatId\" value=\"$seatId\" hidden />";
 
                 $formatted .= '</div></td>';
 

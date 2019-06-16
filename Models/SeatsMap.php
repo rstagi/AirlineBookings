@@ -107,7 +107,7 @@ class SeatsMap extends \MVC\Model
      */
     public function isSeatBought(string $seatId) : bool
     {
-        $result = $this->query("SELECT * FROM ".\MVC\Model::PURCHASES_TABLE." WHERE SeatId = ?", $seatId);
+        $result = $this->query("SELECT * FROM ".self::PURCHASES_TABLE." WHERE SeatId = ?", $seatId);
 
         $bought = false;
         if ($result->num_rows > 0)

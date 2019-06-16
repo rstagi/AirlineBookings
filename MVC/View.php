@@ -14,7 +14,8 @@ class View {
     /**
      * View constructor.
      * @param Model|null $model
-     * @param $template
+     * @param string $template
+     * @param string $title
      */
     public function __construct (Model $model = null, $template = "", $title = "") {
         $this->model = $model;
@@ -32,7 +33,7 @@ class View {
         $template = $this->template;
 
         ob_start();
-        require View::TEMPLATE;
+        require self::TEMPLATE;
         $content = ob_get_clean();
 
         return ['headers' => $headers, 'body' => $content];

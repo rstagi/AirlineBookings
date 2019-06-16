@@ -38,12 +38,21 @@ catch (Exception $e) {
     $view = new \MVC\View(null, 'Templates/Errors/500InternalServerError.html.php');
 }
 
-if (isset($route) && isset($_GET['action']) && !empty($_GET['action']))
-    \MVC\Dispatcher::dispatch($route->getController(), $_GET['action'], $_GET['args'] ? json_decode($_GET['args']) : []);
+/* catch actions */
+try {
+    $action = ($_POST['action'] ?? $_GET['action']) ?? '[]';
+    $args = ($_POST['args'] ?? $_GET['args']) ?? '[]';
+    if (isset($route) && \Utils\AirlineBookingsUtils::isNonEmpty($action))
+        \MVC\Dispatcher::dispatch($route->getController(), $action, $args ? json_decode($args, true) : []);
 
+}
+catch (\Exception $e)
+{
+}
+
+/* render view */
 $render = $view->render();
 foreach ($render['headers'] as $header) {
     header($header);
 }
-
 echo $render['body'];

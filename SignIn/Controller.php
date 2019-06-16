@@ -31,7 +31,7 @@ class Controller extends \MVC\Controller {
         if (isset($error)) throw new ControllerException($error, 400);
 
         if(! $this->model->login($email, $password) )
-            throw new ControllerException('Wrong email or password!', 404);
+            throw new ControllerException($this->model->getError(), 404);
     }
 
     /**

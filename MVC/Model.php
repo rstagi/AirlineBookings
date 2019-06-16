@@ -23,14 +23,19 @@ class ModelException extends \Exception
  */
 class Model
 {
-    private $db;
+    /** Constants **/
     const TOKEN_TTL = 120; //secs
     const USER_ID_KEY = "UserId";
     const TOKEN_KEY = "Token";
-    const TOKEN_AGE_KEY = "Token_age";
+    const EMAIL_KEY = "Email";
     const PURCHASES_TABLE = "Purchases";
     const RESERVATIONS_TABLE = "Reservations";
     const USERS_TABLE = "Users";
+
+    private $db;
+    protected $error;   // error messages to show in the view
+    protected $info;    // info messages
+    protected $success; // success messages
 
     /**
      * Model constructor.
@@ -57,7 +62,6 @@ class Model
      */
     protected function query($statement, ...$params) : \mysqli_result
     {
-
         $stmt = $this->prepareStatement($statement, $params);
         if (!$stmt->execute())
             throw new ModelException("Database Error", 500);
@@ -92,6 +96,7 @@ class Model
     protected function transactionRollback()
     {
         mysqli_rollback($this->db);
+        mysqli_autocommit($this->db, true);
     }
 
     /**
@@ -100,6 +105,7 @@ class Model
     protected function transactionCommit()
     {
         mysqli_commit($this->db);
+        mysqli_autocommit($this->db, true);
     }
 
 
@@ -120,11 +126,7 @@ class Model
             $paramTypes = "";
             foreach($params[0] as $p) {
                 $paramTypes .= $this->getParamType($p);
-                $sanitizedValue = $this->sanitize($p);
-                if (gettype($sanitizedValue) == 'array')
-                    $paramsList = array_merge($paramsList, $sanitizedValue);
-                else
-                    $paramsList[] = $sanitizedValue;
+                $paramsList[] = $this->sanitize($p);
             }
             $stmt->bind_param($paramTypes, ...$paramsList);
         }
@@ -146,9 +148,6 @@ class Model
             case 'double':
                 $paramType .= 'd';
                 break;
-            case 'array':
-                $paramType .= str_repeat(getParamType($param[0]), sizeof($param));
-                break;
             default:
                 throw new ModelException("Database Error: Not recognized Object", 500);
         }
@@ -163,12 +162,6 @@ class Model
     {
         if (gettype($input) == 'string')
             return mysqli_real_escape_string($this->db, $input);
-        else if (gettype($input) == 'array' && gettype($input[0]) == 'string') {
-            $arr = array();
-            foreach($input as $str)
-                $arr[] = $this->sanitize($str);
-            return $arr;
-        }
         return $input;
     }
 
@@ -181,15 +174,33 @@ class Model
     {
         session_start();
         return (session_status() === PHP_SESSION_ACTIVE
-            && \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[Model::USER_ID_KEY])
-            && $this->checkToken($_SESSION[Model::TOKEN_KEY], $updatedToken));
+            && \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[self::USER_ID_KEY])
+            && $this->checkToken($updatedToken));
     }
 
+    /**
+     * @return int
+     * @throws ModelException
+     */
     public function getLoggedUserId() : int
     {
-        if ( ! \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[Model::USER_ID_KEY]) )
+        session_start();
+        if ( ! \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[self::USER_ID_KEY]) )
             throw new ModelException("User not logged in", 401);
-        return $_SESSION[Model::USER_ID_KEY];
+        return $_SESSION[self::USER_ID_KEY];
+
+    }
+
+    /**
+     * @return string
+     * @throws ModelException
+     */
+    public function getLoggedUserEmail() : string
+    {
+        session_start();
+        if ( ! \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[self::EMAIL_KEY]) )
+            throw new ModelException("User not logged in", 401);
+        return $_SESSION[self::EMAIL_KEY];
 
     }
 
@@ -198,9 +209,8 @@ class Model
      */
     public function logout()
     {
-        $_SESSION[Model::USER_ID_KEY] = null;
-        $_SESSION[Model::TOKEN_KEY] = null;
-        $_SESSION[Model::TOKEN_AGE_KEY] = null;
+        $_SESSION[self::USER_ID_KEY] = null;
+        $_SESSION[self::TOKEN_KEY] = null;
     }
 
     /**
@@ -221,16 +231,48 @@ class Model
         $result = $this->query("SELECT Token, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(Token_age)) Token_age FROM Users WHERE UserId=?",
                                         $this->getLoggedUserId());
         $result = $result->fetch_array();
-        if ($result['Token_age'] > Model::TOKEN_TTL || $result['Token'] != $_SESSION[Model::TOKEN_KEY])
+        if ($result['Token_age'] > self::TOKEN_TTL || $result['Token'] != $_SESSION[self::TOKEN_KEY])
             return false;
 
         if ($update)
         {
-            $newToken = $this->generateToken();
-            $this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?", $newToken, $this->getLoggedUserId());
-            $_SESSION[Model::TOKEN_KEY] = $newToken;
+            $this->updateToken();
         }
         return true;
+    }
+
+    /**
+     * @throws ModelException
+     */
+    protected function updateToken()
+    {
+        $newToken = $this->generateToken();
+        if ($this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?", $newToken, $this->getLoggedUserId()) )
+            $_SESSION[self::TOKEN_KEY] = $newToken;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError() : string
+    {
+        return ($this->error) ?? "";
+    }
+
+    /**
+     * @return string
+     */
+    public function getInfo() : string
+    {
+        return ($this->info) ?? "";
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuccess() : string
+    {
+        return ($this->success) ?? "";
     }
 
     /**

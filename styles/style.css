@@ -68,8 +68,16 @@ img.seat {
     width: 30px;
 }
 
+img.seat-legend {
+    width: 20px;
+}
+
 .cursor-pointer {
     cursor: pointer;
+}
+
+.hover-light-up:hover {
+    opacity: 0.5;
 }
 
 /* On screens that are less than 700px wide, make the sidebar into a top bar */

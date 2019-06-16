@@ -15,14 +15,14 @@ else:
         <div class="card-body">
             <h5 class="card-title">Log in</h5>
             <h7 class="card-subtitle mb-3">Do you already have an account? Log in using the following form:</h7>
-            <form class="controller" controller="SignIn" action="login" redirectTo="./?page=PersonalPage">
+            <form class="async controller" controller="SignIn" action="login" redirectTo="./?page=PersonalPage">
                 <div class="errorMessage alert alert-danger" role="alert" style="display: none">
                 </div>
                 <div class="form group my-2">
                     <input type="email" class="form-control" id="login-email" name="email" placeholder="Email" required />
                 </div>
                 <div class="form group my-2">
-                    <input type="password" class="form-control" id="login-password" name="password" placeholder="Password" required pattern="[a-z]+(.*)[A-Z0-9]+" />
+                    <input type="password" class="form-control" id="login-password" name="password" placeholder="Password" required />
                 </div>
                 <button type="submit" id="login-btn" class="btn btn-primary my-3">Log in</button>
             </form>
@@ -33,14 +33,17 @@ else:
         <div class="card-body">
             <h5 class="card-title">Register</h5>
             <h7 class="card-subtitle mb-3">You're not registered yet? Use the following form to become a member:</h7>
-            <form class="controller" controller="SignIn" action="register" redirectTo="./?page=PersonalPage" checkBefore="checkPasswordConfirm">
+            <form class="async controller" controller="SignIn" action="register" redirectTo="./?page=PersonalPage" checkBefore="checkPasswordConfirm">
                 <div class="errorMessage alert alert-danger" role="alert" style="display: none">
                 </div>
                 <div class="form group my-2">
                     <input type="email" class="form-control" id="register-email" name="email" placeholder="Email" required />
                 </div>
                 <div class="form group my-2">
-                    <input type="password" class="form-control" id="register-password" name="password" placeholder="Password" required pattern="[a-z]+(.*)[A-Z0-9]+" />
+                    <input type="password" class="form-control" id="register-password" name="password" placeholder="Password"
+                           pattern="(?=.*[a-z])(?=.*[A-Z0-9]).+" required
+                           title="Must contain at least one lower-case alphabetic character and one
+                           other character that is either alphabetical uppercase or numeric" />
                 </div>
                 <div class="form group my-2">
                     <input type="password" class="form-control" id="register-password-confirm" placeholder="Retype Password" required />

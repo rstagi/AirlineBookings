@@ -8,17 +8,20 @@
         $nonFreeSeats = $model->getNonFreeSeats();
         $boughtSeats = sizeOf($nonFreeSeats['bought']);
         $reservedSeats = sizeOf($nonFreeSeats['reserved']);
-        $leftSeats = \Utils\SeatsUtils::calculateNumberOfFreeSeats($boughtSeats + $reservedSeats);
+        $freeSeats = \Utils\SeatsUtils::calculateNumberOfFreeSeats($boughtSeats + $reservedSeats);
         ?>
         <div class="row">
-            <div class="text-right col-4">
-                <b>Left: </b><span id="leftSeats"><?= $leftSeats ?></span><br />
+            <div class="text-center col-4">
+                <img src="images/free_seat.png" class="seat-legend" /><br />
+                <b>Free: </b><span id="freeSeats"><?= $freeSeats ?></span>
             </div>
             <div class="text-center col-4">
-                <b>Reserved: </b><span id="reservedSeats"><?= $reservedSeats ?></span><br />
+                <img src="images/reserved_seat.png" class="seat-legend" /><br />
+                <b>Reserved: </b><span id="reservedSeats"><?= $reservedSeats ?></span>
             </div>
-            <div class="text-left col-4">
-                <b>Bought: </b><span id="boughtSeats"><?= $boughtSeats ?></span><br />
+            <div class="text-center col-4">
+                <img src="images/bought_seat.png" class="seat-legend" /><br />
+                <b>Bought: </b><span id="boughtSeats"><?= $boughtSeats ?></span>
             </div>
         </div>
         <?php
@@ -37,12 +40,9 @@
         $('img.seat.reserved').prop("src", "images/reserved_seat.png");
         $('img.seat.bought').prop("src", "images/bought_seat.png");
         $('img.seat.free').prop("src", "images/free_seat.png");
-        $('img.seat.selected').prop("src", "images/selected_seat.png");
 
-
-        $('span#leftSeats').html($('img.seat.free').length);
-        let numberOfSelected = $('img.seat.selected').length;
-        $('span#reservedSeats').html(numberOfSelected + $('img.seat.reserved').length);
+        $('span#freeSeats').html($('img.seat.free').length);
+        $('span#reservedSeats').html($('img.seat.reserved').length);
         $('span#boughtSeats').html($('img.seat.bought').length);
     });
 </script>

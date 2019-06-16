@@ -6,7 +6,7 @@
     <a href="./?page=SignIn">Login</a>
     <a href="./?page=SignIn">Register</a>
     <?php else: ?>
-    <a href="./?page=PersonalPage">Book</a>
+    <a href="./?page=PersonalPage">Personal Page</a>
     <a href="./?page=Homepage&action=logout">Logout</a>
     <?php endif;?>
 </nav>
