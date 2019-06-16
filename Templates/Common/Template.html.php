@@ -28,19 +28,27 @@
 
     <?php
     require_once 'Templates/Common/Header.html.php';
+    ?>
+
+    <div class="row w-100">
+    <?php
     require_once 'Templates/Common/Sidebar.html.php';
     ?>
 
-    <div id="content"  class="text-center m-0">
-        <?php
-        require_once $template;
-        ?>
+    <div id="content-wrapper" class="w-100">
+        <div id="content" class="text-center">
+            <?php
+            require_once $template;
+            ?>
+        </div>
+
+        <div class="content-footer">
+            <?php
+            require 'Templates/Common/Footer.html.php';
+            ?>
+        </div>
     </div>
-
-    <?php
-    require_once 'Templates/Common/Footer.html.php';
-    ?>
-
+    </div>
 </div>
 
 <!-- Project common JS -->

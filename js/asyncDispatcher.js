@@ -16,12 +16,6 @@ function makeAsyncAction (controller, action, args, options) {
             if (options.redirectTo != null && options.redirectTo != undefined)
                 window.location.replace(options.redirectTo);
 
-            if (options.errorMessage != undefined && options.errorMessage != null)
-                $(options.errorMessage).hide();
-
-            if (options.successMessage != undefined && options.successMessage != null)
-                $(options.successMessage).html(payload).show();
-
             if (options.onSuccess != null && options.onSuccess != undefined) {
                 if (options.idForCallback != null && options.idForCallback != undefined)
                     eval(options.onSuccess + '("' + options.idForCallback + '")');
@@ -37,12 +31,6 @@ function makeAsyncAction (controller, action, args, options) {
                 error = "Internal Server Error";
             else
                 error = xhr.responseText;
-
-            if (options.successMessage != undefined && options.successMessage != null)
-                $(options.successMessage).hide();
-
-            if (options.errorMessage != undefined && options.errorMessage != null)
-                $(options.errorMessage).html(error).show();
 
             if (options.onFailure != null && options.onFailure != undefined) {
                 if (options.idForCallback != null && options.idForCallback != undefined)
@@ -80,9 +68,7 @@ $('form.controller').submit(function (e) {
                 checkCb: $(this).attr("checkBefore"),
                 redirectTo: $(this).attr("redirectTo"),
                 onSuccess: $(this).attr("onSuccess"),
-                onFailure: $(this).attr("onFailure"),
-                errorMessage: $(this).find('.errorMessage'),
-                successMessage: $(this).find('.successMessage')
+                onFailure: $(this).attr("onFailure")
             });
 
     } else {

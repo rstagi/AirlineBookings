@@ -52,6 +52,10 @@ class Model
                 mysqli_connect_error());
         }
         $this->db = $db;
+
+        $this->error = null;
+        $this->info = null;
+        $this->success = null;
     }
 
     /**

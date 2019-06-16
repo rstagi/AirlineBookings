@@ -98,7 +98,7 @@ class PersonalPage extends SeatsMap {
         $result = $this->query("SELECT * FROM $purchasesTable WHERE SeatId IN ( $seatsStr )");
         if ($result->num_rows > 0) {
             $this->transactionRollback();
-            $this->error = "One of the seats you were trying to buy has already been sold. Sorry for the inconvenience.";
+            $this->error = "One of the seats you were trying to buy has already been sold.<br />Sorry for the inconvenience.";
             return false;
         }
 
@@ -110,7 +110,7 @@ class PersonalPage extends SeatsMap {
 
         if ($result->num_rows < sizeof($seats)) {
             $this->transactionRollback();
-            $this->error = "One of the seats you were trying to buy wasn't reserved by you anymore. Please, try again.";
+            $this->error = "One of the seats you were trying to buy is not reserved to you anymore. Please, try again.";
             return false;
         }
 

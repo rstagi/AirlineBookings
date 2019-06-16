@@ -42,12 +42,19 @@ catch (Exception $e) {
 try {
     $action = ($_POST['action'] ?? $_GET['action']) ?? '[]';
     $args = ($_POST['args'] ?? $_GET['args']) ?? '[]';
-    if (isset($route) && \Utils\AirlineBookingsUtils::isNonEmpty($action))
+    if (isset($route) && \Utils\AirlineBookingsUtils::isNonEmpty($action)
+        && ($_SESSION['action'] != $action || $_SESSION['args'] != $args) ) {
         \MVC\Dispatcher::dispatch($route->getController(), $action, $args ? json_decode($args, true) : []);
+
+    }
 
 }
 catch (\Exception $e)
 {
+}
+finally {
+    $_SESSION['action'] = $action;
+    $_SESSION['args'] = $args;
 }
 
 /* render view */

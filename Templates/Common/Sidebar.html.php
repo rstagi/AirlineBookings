@@ -9,4 +9,10 @@
     <a href="./?page=PersonalPage">Personal Page</a>
     <a href="./?page=Homepage&action=logout">Logout</a>
     <?php endif;?>
+
+    <div class="sidebar-footer">
+        <?php
+        require 'Templates/Common/Footer.html.php';
+        ?>
+    </div>
 </nav>

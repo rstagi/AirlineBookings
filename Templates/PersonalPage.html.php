@@ -16,7 +16,7 @@ else:
 
         <div class="row my-3">
             <div class="col text-center">
-                <button class="btn btn-sm btn-secondary small" onclick="location.reload()">Update</button><br/>
+                <button class="btn btn-sm btn-secondary small" onclick="location.reload();">Update</button><br/>
                 <h5>Seats map</h5>
             </div>
         </div>
@@ -52,11 +52,17 @@ else:
 
             <button type="submit" class="btn btn-lg btn-primary" id="buySeatsBtn">Buy</button>
 
-            <div class="errorMessage alert alert-danger my-3" role="alert" style="display: none">
-                <?= $model->getError(); ?>
+            <div class="errorMessage alert alert-danger alert-dismissible my-3" role="alert" style="display:none">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="$('.successMessage').hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <p class="alert-content"><?= $model->getError(); ?></p>
             </div>
-            <div class="successMessage alert alert-success my-3" role="alert" style="display: none">
-                <?= $model->getSuccess(); ?>
+            <div class="successMessage alert alert-success alert-dismissible my-3" role="alert" style="display:none">
+                <button type="button" class="close" aria-label="Close" onclick="$('.successMessage').hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <p class="alert-content"><?= $model->getSuccess(); ?></p>
             </div>
         </form>
         <div id="inset-form" hidden></div>
@@ -161,12 +167,14 @@ else:
     }
 
     function showErrorMessage(msg) {
-        $('.errorMessage').html(msg).show();
+        $('.errorMessage .alert-content').html(msg);
+        $('.errorMessage').show();
         $('.successMessage').hide();
     }
 
     function showSuccessMessage(msg) {
-        $('.successMessage').html(msg).show();
+        $('.successMessage .alert-content').html(msg);
+        $('.successMessage').show();
         $('.errorMessage').hide();
     }
 

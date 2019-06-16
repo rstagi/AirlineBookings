@@ -43,17 +43,18 @@ class Controller extends \MVC\Controller {
         $error = "";
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-            $error .= '<li>Invalid email</li>';
+            $error .= '<br /><b>Invalid email</b>';
 
         if($this->model->userExists($email))
-            $error .= '<li>The email has already been used</li>';
+            $error .= '<br /><b>The email has already been used</b>';
 
         if (!preg_match($this->model->getPasswordRegex(), $password))
-            $error .= '<li>Invalid password</li>';
+            $error .= '<br /><b>Invalid password</b>';
 
-        if (!empty($error))
-            throw new ControllerException('<ul>'.$error.'</ul>', 400);
-
+        if (!empty($error)) {
+            $error = 'Some errors occurred while validating your registration:'.$error;
+            throw new ControllerException($error, 400);
+        }
         $this->model->register($email, $password);
     }
 }

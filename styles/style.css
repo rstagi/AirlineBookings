@@ -1,3 +1,13 @@
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+#container {
+    height: 100%;
+    width: 100%;
+}
+
 /* seats */
 #seats-map {
     max-width: 700px;
@@ -19,12 +29,12 @@
 /* sidebar */
 /* The side navigation menu */
 .sidebar {
-    margin: -56px 0 0 0;
-    padding: 56px 0 0 0;
-    float: left;
     width: 200px;
     overflow: auto;
+    padding: 56px 0 0 5px;
     height: 100%;
+    position: fixed;
+    z-index: 8000;
 }
 
 /* Sidebar links */
@@ -49,18 +59,37 @@
 
 /* Page content. The value of the margin-left property should match the value of the sidebar's width property */
 div#content {
-    margin-left: 200px;
     min-height: 180px;
 }
 
+/* contents */
+header.header {
+    position: fixed;
+    width: 100%;
+    z-index: 9000;
+}
+
+div#content-wrapper {
+    height: 100%;
+    position: relative;
+    margin: 56px 0 0 200px;
+    min-height: 90vh;
+}
+
 /* Footer */
-footer#footer {
-    width: 200px;
-    font-size: 12px;
+footer.footer {
+    font-size: 10px;
+    margin: 0 auto 0 auto;
+}
+
+div.sidebar-footer {
+    padding: 10px;
+    bottom: 0px;
     position: absolute;
-    bottom: 0;
-    padding: 0;
-    margin: 0;
+}
+
+div.content-footer {
+    display: none;
 }
 
 /** Seats **/
@@ -86,13 +115,14 @@ img.seat-legend {
         height: auto;
         position: relative;
         width: 100%;
-        margin: 0;
+        margin: 56px 0 0 0;
         float: none;
-        padding: 0;
+        padding: 0 0 0 10px;
     }
     .sidebar a {float: left;}
-    div#content {margin-left: 0;}
-    footer#footer { width: 100%; position: relative; }
+    div#content-wrapper {margin-left: 0;}
+    div.content-footer { display: block; }
+    div.sidebar-footer { display: none; }
 }
 
 /* On screens that are less than 400px, display the bar vertically, instead of horizontally */
