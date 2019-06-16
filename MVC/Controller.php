@@ -14,7 +14,7 @@ class Controller {
      * Controller constructor.
      * @param Model $model
      */
-    public function __construct(Model $model) {
+    public function __construct(Model $model = null) {
         $this->model = $model;
     }
 
@@ -27,9 +27,3 @@ class Controller {
 
 }
 
-class ControllerException extends \Exception {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-}

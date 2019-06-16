@@ -6,7 +6,7 @@ namespace MVC;
  * @package MVC
  */
 class View {
-    const TEMPLATE = "Templates/Common/Template.html.php";
+    const TEMPLATE = "Templates/Layout/Template.html.php";
     private $model;
     private $template;
     private $title;

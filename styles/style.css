@@ -1,3 +1,7 @@
+/********************/
+/*** PAGE LAYOUT ****/
+/********************/
+
 html, body {
     height: 100%;
     width: 100%;
@@ -8,61 +12,6 @@ html, body {
     width: 100%;
 }
 
-/* seats */
-#seats-map {
-    max-width: 700px;
-}
-
-#login, #registration {
-    min-width: 350px;
-}
-
-/* forms */
-#login form {
-    margin-top: 50px;
-}
-
-#registration form {
-    margin-top: 30px;
-}
-
-/* sidebar */
-/* The side navigation menu */
-.sidebar {
-    width: 200px;
-    overflow: auto;
-    padding: 56px 0 0 5px;
-    height: 100%;
-    position: fixed;
-    z-index: 8000;
-}
-
-/* Sidebar links */
-.sidebar a {
-    display: block;
-    color: black;
-    padding: 16px;
-    text-decoration: none;
-}
-
-/* Active/current link */
-.sidebar a.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-/* Links on mouse-over */
-.sidebar a:hover:not(.active) {
-    background-color: #555;
-    color: white;
-}
-
-/* Page content. The value of the margin-left property should match the value of the sidebar's width property */
-div#content {
-    min-height: 180px;
-}
-
-/* contents */
 header.header {
     position: fixed;
     width: 100%;
@@ -92,7 +41,53 @@ div.content-footer {
     display: none;
 }
 
-/** Seats **/
+.sidebar {
+    width: 200px;
+    overflow: auto;
+    padding: 56px 0 0 5px;
+    height: 100%;
+    position: fixed;
+    z-index: 8000;
+}
+
+.sidebar a {
+    display: block;
+    color: black;
+    padding: 16px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #555;
+    color: white;
+}
+
+div#content {
+    min-height: 180px;
+}
+
+/******************/
+/**** SIGN IN *****/
+/******************/
+#login form {
+    margin-top: 50px;
+}
+
+#registration form {
+    margin-top: 30px;
+}
+
+#login, #registration {
+    min-width: 350px;
+}
+
+/******************/
+/**** SEATS MAP ***/
+/******************/
+#seats-map {
+    max-width: 700px;
+}
+
 img.seat {
     width: 30px;
 }
@@ -107,6 +102,16 @@ img.seat-legend {
 
 .hover-light-up:hover {
     opacity: 0.5;
+}
+
+/*******************/
+/***** ALERTS ******/
+/*******************/
+.alert-overlay {
+    position: fixed;
+    bottom: 5%;
+    left: 20%;
+    width: 60%;
 }
 
 /* On screens that are less than 700px wide, make the sidebar into a top bar */
@@ -130,9 +135,5 @@ img.seat-legend {
     .sidebar a {
         text-align: center;
         float: none;
-    }
-
-    div#content {
-        margin-left: 0px;
     }
 }

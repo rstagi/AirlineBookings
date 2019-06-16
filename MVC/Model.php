@@ -3,19 +3,6 @@
 namespace MVC;
 
 use mysqli;
-use Throwable;
-
-/**
- * Class ModelException
- * @package MVC
- */
-class ModelException extends \Exception
-{
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-}
 
 /**
  * Class Model
@@ -24,7 +11,6 @@ class ModelException extends \Exception
 class Model
 {
     /** Constants **/
-    const TOKEN_TTL = 120; //secs
     const USER_ID_KEY = "UserId";
     const TOKEN_KEY = "Token";
     const EMAIL_KEY = "Email";
@@ -39,13 +25,12 @@ class Model
 
     /**
      * Model constructor.
+     * @param bool $sshEnabled
      */
-    protected function __construct()
+    protected function __construct(bool $sshEnabled = false)
     {
         // Db Configuration
-        require_once 'Global/config.php';
-
-        $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        $db = new mysqli(\Constants::DB_HOST, \Constants::DB_USER, \Constants::DB_PASS, \Constants::DB_NAME);
         if (mysqli_connect_errno())
         {
             die("Connect failed: <br>" .
@@ -56,19 +41,21 @@ class Model
         $this->error = null;
         $this->info = null;
         $this->success = null;
+
+        if ($sshEnabled) self::enforceHTTPS();
     }
 
     /**
      * @param $statement
      * @param mixed ...$params
      * @return \mysqli_result
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     protected function query($statement, ...$params) : \mysqli_result
     {
         $stmt = $this->prepareStatement($statement, $params);
         if (!$stmt->execute())
-            throw new ModelException("Database Error", 500);
+            throw new Exceptions\ModelException("Database Error", 500);
         return $stmt->get_result();
     }
 
@@ -76,13 +63,13 @@ class Model
      * @param $statement
      * @param mixed ...$params
      * @return int
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     protected function execute($statement, ...$params) : int
     {
         $stmt = $this->prepareStatement($statement, $params);
         if (!$stmt->execute())
-            throw new ModelException("Database Error", 500);
+            throw new Exceptions\ModelException("Database Error", 500);
         return $stmt->affected_rows;
     }
 
@@ -117,14 +104,14 @@ class Model
      * @param $statement
      * @param mixed ...$params
      * @return \mysqli_stmt
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     private function prepareStatement($statement, ...$params) : \mysqli_stmt
     {
         if(! ($stmt = $this->db->prepare($statement)) )
-            throw new ModelException("Database Error", 500); // query not printed on purpose: security issues
+            throw new Exceptions\ModelException("Database Error", 500); // query not printed on purpose: security issues
 
-        if (\Utils\AirlineBookingsUtils::isNonEmpty($params[0]))
+        if (\Utils::isNonEmpty($params[0]))
         {
             $paramsList = array();
             $paramTypes = "";
@@ -138,6 +125,11 @@ class Model
         return $stmt;
     }
 
+    /**
+     * @param $param
+     * @return string
+     * @throws Exceptions\ModelException
+     */
     private function getParamType($param) : string
     {
         $paramType = '';
@@ -153,7 +145,7 @@ class Model
                 $paramType .= 'd';
                 break;
             default:
-                throw new ModelException("Database Error: Not recognized Object", 500);
+                throw new Exceptions\ModelException("Database Error: Not recognized Object", 500);
         }
         return $paramType;
     }
@@ -172,38 +164,38 @@ class Model
     /**
      * @param bool $updatedToken
      * @return bool
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     public function isUserLoggedIn(bool $updatedToken = true) : bool
     {
         session_start();
         return (session_status() === PHP_SESSION_ACTIVE
-            && \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[self::USER_ID_KEY])
+            && \Utils::isNonEmpty($_SESSION[self::USER_ID_KEY])
             && $this->checkToken($updatedToken));
     }
 
     /**
      * @return int
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     public function getLoggedUserId() : int
     {
         session_start();
-        if ( ! \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[self::USER_ID_KEY]) )
-            throw new ModelException("User not logged in", 401);
+        if ( ! \Utils::isNonEmpty($_SESSION[self::USER_ID_KEY]) )
+            throw new Exceptions\ModelException("User not logged in", 401);
         return $_SESSION[self::USER_ID_KEY];
 
     }
 
     /**
      * @return string
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     public function getLoggedUserEmail() : string
     {
         session_start();
-        if ( ! \Utils\AirlineBookingsUtils::isNonEmpty($_SESSION[self::EMAIL_KEY]) )
-            throw new ModelException("User not logged in", 401);
+        if ( ! \Utils::isNonEmpty($_SESSION[self::EMAIL_KEY]) )
+            throw new Exceptions\ModelException("User not logged in", 401);
         return $_SESSION[self::EMAIL_KEY];
 
     }
@@ -228,14 +220,14 @@ class Model
     /**
      * @param bool $update
      * @return bool
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     public function checkToken(bool $update = true) : bool
     {
         $result = $this->query("SELECT Token, (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(Token_age)) Token_age FROM Users WHERE UserId=?",
                                         $this->getLoggedUserId());
         $result = $result->fetch_array();
-        if ($result['Token_age'] > self::TOKEN_TTL || $result['Token'] != $_SESSION[self::TOKEN_KEY])
+        if ($result['Token_age'] > \Constants::TOKEN_TTL || $result['Token'] != $_SESSION[self::TOKEN_KEY])
             return false;
 
         if ($update)
@@ -246,7 +238,7 @@ class Model
     }
 
     /**
-     * @throws ModelException
+     * @throws Exceptions\ModelException
      */
     protected function updateToken()
     {
@@ -287,4 +279,14 @@ class Model
         $this->db->close();
     }
 
+    /**
+     *
+     */
+    public static function enforceHTTPS()
+    {
+        if($_SERVER["HTTPS"] != "on") {
+            header("Location: https://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]);
+            exit();
+        }
+    }
 }
