@@ -21,7 +21,6 @@ class Controller extends \MVC\Controller {
      * @param string $seatId
      * @return bool
      * @throws MVCE\ControllerException
-     * @throws MVCE\ModelException
      */
     public function reserve (string $seatId) {
         if ( ! $this->model->isUserLoggedIn() )
@@ -38,7 +37,6 @@ class Controller extends \MVC\Controller {
      * @param array $seats
      * @return bool
      * @throws MVCE\ControllerException
-     * @throws MVCE\ModelException
      */
     public function buy (array $seats) {
         if ( ! $this->model->isUserLoggedIn() )
@@ -55,7 +53,6 @@ class Controller extends \MVC\Controller {
      * @param $seatId
      * @return bool
      * @throws MVCE\ControllerException
-     * @throws MVCE\ModelException
      */
     public function free ($seatId) {
         if ( ! $this->model->isUserLoggedIn() )

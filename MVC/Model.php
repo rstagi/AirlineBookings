@@ -7,6 +7,8 @@ use mysqli;
 /**
  * Class Model
  * @package MVC
+ *
+ * It uses MySQL db to store the data
  */
 class Model
 {
@@ -42,7 +44,7 @@ class Model
         $this->info = null;
         $this->success = null;
 
-        if ($sshEnabled) self::enforceHTTPS();
+        if ($sshEnabled || $this->isUserLoggedIn()) self::enforceHTTPS();
     }
 
     /**
@@ -74,7 +76,7 @@ class Model
     }
 
     /**
-     *
+     * @return void
      */
     protected function transactionBegin()
     {
@@ -82,21 +84,23 @@ class Model
     }
 
     /**
-     *
+     * @return bool
      */
-    protected function transactionRollback()
+    protected function transactionRollback() : bool
     {
-        mysqli_rollback($this->db);
+        $result = mysqli_rollback($this->db);
         mysqli_autocommit($this->db, true);
+        return $result;
     }
 
     /**
-     *
+     * @return bool
      */
-    protected function transactionCommit()
+    protected function transactionCommit() : bool
     {
-        mysqli_commit($this->db);
+        $result = mysqli_commit($this->db);
         mysqli_autocommit($this->db, true);
+        return $result;
     }
 
 
@@ -105,6 +109,8 @@ class Model
      * @param mixed ...$params
      * @return \mysqli_stmt
      * @throws Exceptions\ModelException
+     *
+     * It dynamically prepares a correct statement, given
      */
     private function prepareStatement($statement, ...$params) : \mysqli_stmt
     {
@@ -129,6 +135,8 @@ class Model
      * @param $param
      * @return string
      * @throws Exceptions\ModelException
+     *
+     * Get param type of param, for the prepared statement
      */
     private function getParamType($param) : string
     {
@@ -153,6 +161,8 @@ class Model
     /**
      * @param $input
      * @return mixed
+     *
+     * Sanitizes the input before sending it to the db
      */
     protected function sanitize($input)
     {
@@ -164,14 +174,18 @@ class Model
     /**
      * @param bool $updatedToken
      * @return bool
-     * @throws Exceptions\ModelException
      */
     public function isUserLoggedIn(bool $updatedToken = true) : bool
     {
         session_start();
-        return (session_status() === PHP_SESSION_ACTIVE
-            && \Utils::isNonEmpty($_SESSION[self::USER_ID_KEY])
-            && $this->checkToken($updatedToken));
+        try {
+            return (session_status() === PHP_SESSION_ACTIVE
+                && \Utils::isNonEmpty($_SESSION[self::USER_ID_KEY])
+                && $this->checkToken($updatedToken));
+        }
+        catch (Exceptions\ModelException $e) {
+            return false;
+        }
     }
 
     /**
@@ -201,12 +215,13 @@ class Model
     }
 
     /**
-     *
+     * @return bool
      */
-    public function logout()
+    public function logout() : bool
     {
         $_SESSION[self::USER_ID_KEY] = null;
         $_SESSION[self::TOKEN_KEY] = null;
+        return true;
     }
 
     /**
@@ -280,7 +295,7 @@ class Model
     }
 
     /**
-     *
+     * Redirects to the https:// if not there
      */
     public static function enforceHTTPS()
     {

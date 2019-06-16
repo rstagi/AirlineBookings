@@ -6,6 +6,8 @@ use MVC\ModelException;
 /**
  * Class Model
  * @package Pages\PersonalPage
+ *
+ * Extends the Homepage model, because it's actually
  */
 class Model extends \Pages\Homepage\Model {
 
@@ -23,8 +25,8 @@ class Model extends \Pages\Homepage\Model {
      */
     public function getNumberOfSelectedSeats () : int
     {
-        $result = $this->query('SELECT COUNT(*) FROM Reservations
-                                        WHERE SeatId NOT IN (
+        $result = $this->query('SELECT COUNT(*) FROM '.self::RESERVATIONS_TABLE.
+                                        ' WHERE SeatId NOT IN (
                                             SELECT SeatId FROM Purchases
                                         ) AND UserId = ?', $this->getLoggedUserId());
 

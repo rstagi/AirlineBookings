@@ -19,7 +19,7 @@ class Controller {
     }
 
     /**
-     *
+     * logout is used by all the pages
      */
     public function logout() {
         $this->model->logout();

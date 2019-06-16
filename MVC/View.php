@@ -25,6 +25,8 @@ class View {
 
     /**
      * @return array
+     *
+     * renders the given template
      */
     public function render () {
         $headers = [];

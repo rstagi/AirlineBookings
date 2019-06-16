@@ -7,6 +7,8 @@ use Pages;
 /**
  * Class Router
  * @package MVC
+ *
+ * Responsible for the routing operation
  */
 class Router {
     const UNAUTHORIZED_TEMPLATE = 'Templates/Errors/401Unauthorized.html.php';
@@ -53,6 +55,9 @@ class Router {
         return new Route($model, $view, $controller);
     }
 
+    /**
+     * @return Route for the internal server error
+     */
     public static function getServerErrorRoute() : Route
     {
         return new Route(null,  new MVC\View(null, self::SERVER_ERROR_TEMPLATE),

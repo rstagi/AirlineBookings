@@ -6,6 +6,8 @@ namespace MVC\Core;
 /**
  * Class Route
  * @package MVC
+ *
+ * Result of the routing operation. Contains model, view and controller
  */
 class Route
 {

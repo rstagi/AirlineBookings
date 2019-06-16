@@ -38,7 +38,7 @@ class Model extends \MVC\Model
      */
     public function login(string $email, string $password) : bool
     {
-        $result = $this->query("SELECT * FROM Users WHERE Email=?", $email);
+        $result = $this->query("SELECT * FROM ".self::USERS_TABLE." WHERE Email=?", $email);
 
         if ($result->num_rows < 1) {
             $this->error = "Wrong email or passwords.";
@@ -49,7 +49,7 @@ class Model extends \MVC\Model
 
         if (password_verify($password, $res['Password'])) {
             $token = $this->generateToken();
-            $this->execute("UPDATE Users SET Token=?, Token_age=NOW() WHERE UserId=?",
+            $this->execute("UPDATE ".self::USERS_TABLE." SET Token=?, Token_age=NOW() WHERE UserId=?",
                                             $token, $res['UserId']);
         }  else {
             $this->error = "Wrong email or passwords.";
@@ -71,7 +71,7 @@ class Model extends \MVC\Model
      */
     public function userExists(string $email) : bool
     {
-        $result = $this->query("SELECT * FROM Users WHERE Email=?", $email);
+        $result = $this->query("SELECT * FROM ".self::USERS_TABLE." WHERE Email=?", $email);
 
         return $result->num_rows > 0;
     }
@@ -88,7 +88,7 @@ class Model extends \MVC\Model
             throw new MVCEE\ModelException("User already exist");
         }
 
-        $this->execute("INSERT INTO Users (Email, Password) VALUES (?, ?);", $email, password_hash($password, Model::HASH_ALGORITHM));
+        $this->execute("INSERT INTO ".self::USERS_TABLE." (Email, Password) VALUES (?, ?);", $email, password_hash($password, Model::HASH_ALGORITHM));
 
         $this->login($email, $password);
         $this->success = "Successfully registered and logged in!";

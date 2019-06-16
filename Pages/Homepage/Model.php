@@ -22,8 +22,8 @@ class Model extends \MVC\Model {
     public function getReservedSeats () : array
     {
         $seats = [];
-        $result = $this->query('SELECT * FROM Reservations
-                                        WHERE SeatId NOT IN (
+        $result = $this->query('SELECT * FROM '.self::RESERVATIONS_TABLE.
+                                        ' WHERE SeatId NOT IN (
                                             SELECT SeatId FROM Purchases
                                         )');    // NOT IN added to prevent dirty data issues
         // (when bought, a seat should not be reserved anymore)
@@ -41,7 +41,7 @@ class Model extends \MVC\Model {
     public function getBoughtSeats () : array
     {
         $seats = array();
-        $result = $this->query('SELECT * FROM Purchases');
+        $result = $this->query('SELECT * FROM '.self::PURCHASES_TABLE);
         while($row = $result->fetch_array()) {
             $seats[$row['SeatId']] = $row['UserId'];
         }
@@ -67,7 +67,7 @@ class Model extends \MVC\Model {
      */
     public function getNumberOfBoughtSeats () : int
     {
-        $result = parent::query('SELECT COUNT(*) FROM Purchases');
+        $result = parent::query('SELECT COUNT(*) FROM '.self::PURCHASES_TABLE);
         $numberOfSeats = $result->fetch_array()[0];
         $result->close();
         return $numberOfSeats;
@@ -79,8 +79,8 @@ class Model extends \MVC\Model {
      */
     public function getNumberOfReservedSeats () : int
     {
-        $result = $this->query('SELECT COUNT(*) FROM Reservations
-                                        WHERE SeatId NOT IN (
+        $result = $this->query('SELECT COUNT(*) FROM '.self::RESERVATIONS_TABLE.
+                                        ' WHERE SeatId NOT IN (
                                             SELECT SeatId FROM Purchases
                                         )');    // NOT IN added to prevent dirty data issues
         // (when bought, a seat should not be reserved anymore)
