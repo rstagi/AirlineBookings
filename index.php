@@ -2,7 +2,10 @@
 require_once 'Global/Constants.php';
 
 // Classes dynamic inclusions
-spl_autoload_register();
+spl_autoload_register(function($name) {
+    $parts = explode('\\', $name);
+    require_once implode(DIRECTORY_SEPARATOR, $parts) . '.php';
+});
 
 session_start();
 

@@ -11,3 +11,11 @@ function checkPasswordConfirm() {
     passwordConf.setCustomValidity('');
     return true;
 }
+
+function loginFailure(id, code, payload) {
+    $('#login').find('.errorMessage').html(payload).show();
+}
+
+function registrationFailure(id, code, payload) {
+    $('#registration').find('.errorMessage').html(payload).show();
+}

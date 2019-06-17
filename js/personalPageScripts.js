@@ -68,7 +68,7 @@ $('img.seat').click(function() {
     $(targetCheckbox).trigger("change");
 });
 
-function reserveFailed(id, code) {
+function reserveFailed(id, code, payload) {
     if (code === 403) // Forbidden -> seat has been already bought
     {
         $('#'+id).removeClass('free');
@@ -82,7 +82,7 @@ function reserveFailed(id, code) {
     }
 }
 
-function reserveSucceed(id) {
+function reserveSucceed(id, payload) {
     $('#'+id).removeClass('free');
     $('#'+id).removeClass('reserved');
     $('#'+id).addClass('selected');
@@ -94,7 +94,7 @@ function reserveSucceed(id) {
     showSuccessMessage("Seat <b>"+id.substr(4)+"</b> has been successfully <b>reserved</b>.")
 }
 
-function freeSucceed(id) {
+function freeSucceed(id, payload) {
     $('#'+id).removeClass('selected');
     $('#'+id).addClass('free');
     $('#'+id.substr(4)).removeClass('selected');

@@ -10,12 +10,14 @@ else:
     </div>
 </div>
 <div class="row">
+    <div class="w-100 text-center">
     <!-- Login -->
     <div id="login" class="card p-3 col-lg-5 mx-lg-auto my-3 mx-3">
         <div class="card-body">
             <h5 class="card-title">Log in</h5>
             <h7 class="card-subtitle mb-3">Do you already have an account? Log in using the following form:</h7>
-            <form class="async controller" controller="SignIn" action="login" redirectTo="./?page=PersonalPage">
+            <form class="async controller" controller="SignIn" action="login" redirectTo="./?page=PersonalPage" id="loginForm"
+                  onFailure="loginFailure">
                 <div class="errorMessage alert alert-danger" role="alert" style="display: none">
                 </div>
                 <div class="form group my-2">
@@ -33,7 +35,8 @@ else:
         <div class="card-body">
             <h5 class="card-title">Register</h5>
             <h7 class="card-subtitle mb-3">You're not registered yet? Use the following form to become a member:</h7>
-            <form class="async controller" controller="SignIn" action="register" redirectTo="./?page=PersonalPage" checkBefore="checkPasswordConfirm">
+            <form class="async controller" controller="SignIn" action="register" redirectTo="./?page=PersonalPage" checkBefore="checkPasswordConfirm"
+                    onFailure="registrationFailure" id="registrationForm">
                 <div class="errorMessage alert alert-danger" role="alert" style="display: none">
                 </div>
                 <div class="form group my-2">
@@ -52,7 +55,7 @@ else:
             </form>
         </div>
     </div>
-
+    </div>
 </div>
 
 

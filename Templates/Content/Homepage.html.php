@@ -1,4 +1,5 @@
 <div class="row">
+    <div class="text-center w-100">
     <!-- seats map -->
     <div id="seats-map" class="col text-center mx-auto">
 
@@ -32,6 +33,7 @@
         <?php else: ?>
             <p>If you would like to <b>reserve</b> or to <b>buy some seats</b>, you should go to your <a href="./?page=PersonalPage">Personal Page</a>.</p>
         <?php endif; ?>
+    </div>
     </div>
 </div>
 

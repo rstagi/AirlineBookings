@@ -11,6 +11,7 @@ else:
     </div>
 </div>
 <div class="row">
+    <div class="text-center w-100">
     <!-- seats map -->
     <div id="seats-map" class="col text-center mx-auto">
 
@@ -69,6 +70,7 @@ else:
         </form>
         <div id="inset-form" hidden></div>
 
+    </div>
     </div>
 </div>
 

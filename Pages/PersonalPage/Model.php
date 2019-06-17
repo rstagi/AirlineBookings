@@ -128,6 +128,9 @@ class Model extends \Pages\Homepage\Model {
             return false;
         }
 
+        // delete reservations
+        $this->execute("DELETE FROM $reservationTable WHERE SeatId IN ( $seatsStr )");
+
         $this->transactionCommit();
         $this->success = "Your purchase has been successfully completed. Purchased seats: <b>".implode('</b>, <b>', $seats).'</b>';
         return true;

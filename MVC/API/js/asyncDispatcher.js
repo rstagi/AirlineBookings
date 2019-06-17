@@ -14,7 +14,8 @@ $('form.controller').submit(function (e) {
     e.preventDefault();
 
     let args = {};
-    for (let element of e.currentTarget)
+    for (let i = 0; i < e.currentTarget.length; i++) {
+        let element = e.currentTarget[i];
         if (element.localName != 'button' && element.name != undefined && element.name != null) {
             if (element.type != 'checkbox' && element.type != 'radio')
                 args[element.name] = element.value;     // if it's a standard input, just take the value
@@ -24,6 +25,7 @@ $('form.controller').submit(function (e) {
                 args[element.name.slice(0, -2)].push(element.value);     // if it's a radio or a checkbox, take the value only if it's checked
             }
         }
+    }
 
 
     if($(this).hasClass('async')) {
@@ -33,7 +35,8 @@ $('form.controller').submit(function (e) {
                 checkCb: $(this).attr("checkBefore"),
                 redirectTo: $(this).attr("redirectTo"),
                 onSuccess: $(this).attr("onSuccess"),
-                onFailure: $(this).attr("onFailure")
+                onFailure: $(this).attr("onFailure"),
+                idForCallback: $(this).attr("id")
             });
     }
     else
@@ -94,6 +97,7 @@ function makeAsyncAction (controller, action, args, options) {
                         "&action="+action+
                         "&args="+JSON.stringify(args);
 
+
     $.ajax({
         contentType: 'application/x-www-form-urlencoded',
         method: 'POST',
@@ -105,9 +109,9 @@ function makeAsyncAction (controller, action, args, options) {
 
             if (options.onSuccess != null && options.onSuccess != undefined) {
                 if (options.idForCallback != null && options.idForCallback != undefined)
-                    eval(options.onSuccess + '("' + options.idForCallback + '")');
+                    eval(options.onSuccess + '("' + options.idForCallback + '", "'+payload+'")');
                 else
-                    eval(options.onSuccess + '()');
+                    eval(options.onSuccess + '("'+payload+'")');
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -121,9 +125,9 @@ function makeAsyncAction (controller, action, args, options) {
 
             if (options.onFailure != null && options.onFailure != undefined) {
                 if (options.idForCallback != null && options.idForCallback != undefined)
-                    eval(options.onFailure + '("' + options.idForCallback + '", ' + xhr.status + ')');
+                    eval(options.onFailure + '("' + options.idForCallback + '", ' + xhr.status + ', "'+error+'")');
                 else
-                    eval(options.onFailure + '(' + xhr.status + ')');
+                    eval(options.onFailure + '(' + xhr.status + ', "'+error+'")');
             }
         }
     });
