@@ -1,0 +1,139 @@
+/********************/
+/*** PAGE LAYOUT ****/
+/********************/
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+#container {
+    height: 100%;
+    width: 100%;
+}
+
+header.header {
+    position: fixed;
+    width: 100%;
+    z-index: 9000;
+}
+
+div#content-wrapper {
+    height: 100%;
+    position: relative;
+    margin: 56px 0 0 200px;
+    min-height: 90vh;
+}
+
+/* Footer */
+footer.footer {
+    font-size: 10px;
+    margin: 0 auto 0 auto;
+}
+
+div.sidebar-footer {
+    padding: 10px;
+    bottom: 0px;
+    position: absolute;
+}
+
+div.content-footer {
+    display: none;
+}
+
+.sidebar {
+    width: 200px;
+    overflow: auto;
+    padding: 56px 0 0 5px;
+    height: 100%;
+    position: fixed;
+    z-index: 8000;
+}
+
+.sidebar a {
+    display: block;
+    color: black;
+    padding: 16px;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #555;
+    color: white;
+}
+
+div#content {
+    min-height: 180px;
+}
+
+/******************/
+/**** SIGN IN *****/
+/******************/
+#login form {
+    margin-top: 50px;
+}
+
+#registration form {
+    margin-top: 30px;
+}
+
+#login, #registration {
+    min-width: 350px;
+}
+
+/******************/
+/**** SEATS MAP ***/
+/******************/
+#seats-map {
+    max-width: 700px;
+}
+
+img.seat {
+    width: 30px;
+}
+
+img.seat-legend {
+    width: 20px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.hover-light-up:hover {
+    opacity: 0.5;
+}
+
+/*******************/
+/***** ALERTS ******/
+/*******************/
+.alert-overlay {
+    position: fixed;
+    bottom: 5%;
+    left: 20%;
+    width: 60%;
+}
+
+/* On screens that are less than 700px wide, make the sidebar into a top bar */
+@media screen and (max-width: 1199px) {
+    .sidebar {
+        height: auto;
+        position: relative;
+        width: 100%;
+        margin: 56px 0 0 0;
+        float: none;
+        padding: 0 0 0 10px;
+    }
+    .sidebar a {float: left;}
+    div#content-wrapper {margin-left: 0;}
+    div.content-footer { display: block; }
+    div.sidebar-footer { display: none; }
+}
+
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+    .sidebar a {
+        text-align: center;
+        float: none;
+    }
+}
